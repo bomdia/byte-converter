@@ -24,18 +24,18 @@ const conversionMap = {
   PB: Math.pow(decimal, 5),
   Pib: Math.pow(binary, 5),
   PiB: Math.pow(binary, 5),
-  Eb: Math.pow(binary, 6),
-  EB: Math.pow(binary, 6),
-  Eib: Math.pow(decimal, 6),
-  EiB: Math.pow(decimal, 6),
-  Zb: Math.pow(binary, 7),
-  ZB: Math.pow(binary, 7),
-  Zib: Math.pow(decimal, 7),
-  ZiB: Math.pow(decimal, 7),
-  Yb: Math.pow(binary, 8),
-  YB: Math.pow(binary, 8),
-  Yib: Math.pow(decimal, 8),
-  YiB: Math.pow(decimal, 8)
+  Eb: Math.pow(decimal, 6),
+  EB: Math.pow(decimal, 6),
+  Eib: Math.pow(binary, 6),
+  EiB: Math.pow(binary, 6),
+  Zb: Math.pow(decimal, 7),
+  ZB: Math.pow(decimal, 7),
+  Zib: Math.pow(binary, 7),
+  ZiB: Math.pow(binary, 7),
+  Yb: Math.pow(decimal, 8),
+  YB: Math.pow(decimal, 8),
+  Yib: Math.pow(binary, 8),
+  YiB: Math.pow(binary, 8)
 }
 
 const isByte = function (str) {
