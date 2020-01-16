@@ -5,12 +5,12 @@ HOW TO USE:
 
 ES6 syntax:
 
-    import ByteConverter from 'byte-converter'
+    import ByteConverter from '@wtfcode/byte-converter'
     console.log(ByteConverter(1,'B','b')) //will output 8
 
 ES5 syntax:
 
-    const ByteConverter = require('byte-converter').default
+    const ByteConverter = require('@wtfcode/byte-converter').default
     console.log(ByteConverter(1024,'MiB','GiB')) //will output 1
 AVAILABLE UNIT:
 
