@@ -12,3 +12,39 @@ ES5 syntax:
 
     const ByteConverter = require('byte-converter').default
     console.log(ByteConverter(1024,'MiB','GiB')) //will output 1
+AVAILABLE UNIT:
+
+ - b
+ - B
+ - kb
+ - kB
+ - Kib
+ - KiB
+ - Mb
+ - MB
+ - Mib
+ - MiB
+ - Gb
+ - GB
+ - Gib
+ - GiB
+ - Tb
+ - TB
+ - Tib
+ - TiB
+ - Pb
+ - PB
+ - Pib
+ - PiB
+ - Eb
+ - EB
+ - Eib
+ - EiB
+ - Zb
+ - ZB
+ - Zib
+ - ZiB
+ - Yb
+ - YB
+ - Yib
+ - YiB
