@@ -1,4 +1,4 @@
-const ByteArray = function () {
+const ByteConverter = function () {
   const defaultUnit = {
     decimal: 1000,
     binary: 1024
@@ -132,6 +132,6 @@ const ByteArray = function () {
 }
 // console.log('module:',module)s
 if(module) {
-  module.exports = ByteArray
+  module.exports = ByteConverter
   // console.log('module.exports exists:',module.exports)
 }
