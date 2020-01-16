@@ -1,64 +1,137 @@
-const decimal = 1000
-const binary = 1024
+const ByteArray = function () {
+  const defaultUnit = {
+    decimal: 1000,
+    binary: 1024
+  }
 
-const conversionMap = {
-  b: Math.pow(binary, 0),
-  B: Math.pow(binary, 0),
-  kb: Math.pow(decimal, 1),
-  kB: Math.pow(decimal, 1),
-  Kib: Math.pow(binary, 1),
-  KiB: Math.pow(binary, 1),
-  Mb: Math.pow(decimal, 2),
-  MB: Math.pow(decimal, 2),
-  Mib: Math.pow(binary, 2),
-  MiB: Math.pow(binary, 2),
-  Gb: Math.pow(decimal, 3),
-  GB: Math.pow(decimal, 3),
-  Gib: Math.pow(binary, 3),
-  GiB: Math.pow(binary, 3),
-  Tb: Math.pow(decimal, 4),
-  TB: Math.pow(decimal, 4),
-  Tib: Math.pow(binary, 4),
-  TiB: Math.pow(binary, 4),
-  Pb: Math.pow(decimal, 5),
-  PB: Math.pow(decimal, 5),
-  Pib: Math.pow(binary, 5),
-  PiB: Math.pow(binary, 5),
-  Eb: Math.pow(decimal, 6),
-  EB: Math.pow(decimal, 6),
-  Eib: Math.pow(binary, 6),
-  EiB: Math.pow(binary, 6),
-  Zb: Math.pow(decimal, 7),
-  ZB: Math.pow(decimal, 7),
-  Zib: Math.pow(binary, 7),
-  ZiB: Math.pow(binary, 7),
-  Yb: Math.pow(decimal, 8),
-  YB: Math.pow(decimal, 8),
-  Yib: Math.pow(binary, 8),
-  YiB: Math.pow(binary, 8)
+  const typeMap = {
+    b: {type: "binary", unitOrder: 0,   name:"bit" },
+    B: {type: "binary", unitOrder: 0,   name:"byte" },
+    kb: {type: "decimal", unitOrder: 1, name:"kilobit" },
+    kB: {type: "decimal", unitOrder: 1, name:"kilobyte" },
+    Kib: {type: "binary", unitOrder: 1, name:"kibibit" },
+    KiB: {type: "binary", unitOrder: 1, name:"kibibyte" },
+    Mb: {type: "decimal", unitOrder: 2, name:"megabit" },
+    MB: {type: "decimal", unitOrder: 2, name:"megabyte" },
+    Mib: {type: "binary", unitOrder: 2, name:"mebibit" },
+    MiB: {type: "binary", unitOrder: 2, name:"mebibyte" },
+    Gb: {type: "decimal", unitOrder: 3, name:"gigabit" },
+    GB: {type: "decimal", unitOrder: 3, name:"gigabyte" },
+    Gib: {type: "binary", unitOrder: 3, name:"gibibit" },
+    GiB: {type: "binary", unitOrder: 3, name:"gibibyte" },
+    Tb: {type: "decimal", unitOrder: 4, name:"terabit" },
+    TB: {type: "decimal", unitOrder: 4, name:"terabyte" },
+    Tib: {type: "binary", unitOrder: 4, name:"tebibit" },
+    TiB: {type: "binary", unitOrder: 4, name:"tebibyte" },
+    Pb: {type: "decimal", unitOrder: 5, name:"petabit" },
+    PB: {type: "decimal", unitOrder: 5, name:"petabyte" },
+    Pib: {type: "binary", unitOrder: 5, name:"pebibit" },
+    PiB: {type: "binary", unitOrder: 5, name:"pebibyte" },
+    Eb: {type: "decimal", unitOrder: 6, name:"exabyte" },
+    EB: {type: "decimal", unitOrder: 6, name:"exabit" },
+    Eib: {type: "binary", unitOrder: 6, name:"exbibit" },
+    EiB: {type: "binary", unitOrder: 6, name:"exbibyte" },
+    Zb: {type: "decimal", unitOrder: 7, name:"zettabit" },
+    ZB: {type: "decimal", unitOrder: 7, name:"zettabyte" },
+    Zib: {type: "binary", unitOrder: 7, name:"zebibit" },
+    ZiB: {type: "binary", unitOrder: 7, name:"zebibyte" },
+    Yb: {type: "decimal", unitOrder: 8, name:"yottabit" },
+    YB: {type: "decimal", unitOrder: 8, name:"yottabyte" },
+    Yib: {type: "binary", unitOrder: 8, name:"yobibit" },
+    YiB: {type: "binary", unitOrder: 8, name:"yobibyte" }
+  }
+
+  const isNumber = function(value) {
+    if ((undefined === value) || (null === value)) {
+      return false;
+    }
+    if (typeof value === 'number') {
+      return true;
+    }
+    return !isNaN(value - 0);
+  }
+
+  const isByte = function (dataFormat) {
+    if (typeMap[dataFormat]) {
+      const character = dataFormat[dataFormat.length - 1]
+      return character === character.toUpperCase()
+    } else throw new Error('"dataFormat" paramater isn\'t a valid dataFormat')
+  }
+  const isBit = function (dataFormat) {
+    if (typeMap[dataFormat]) {
+      const character = dataFormat[dataFormat.length - 1]
+      return character === character.toLowerCase()
+    } else throw new Error('"dataFormat" paramater isn\'t a valid dataFormat')
+  }
+  const isBinary = function (dataFormat){
+    if (typeMap[dataFormat]) {
+      return typeMap[dataFormat].type === "binary"
+    } else throw new Error('"dataFormat" paramater isn\'t a valid dataFormat')
+  }
+  const isDecimal = function (dataFormat){
+    if (typeMap[dataFormat]) {
+      return typeMap[dataFormat].type === "decimal"
+    } else throw new Error('"dataFormat" paramater isn\'t a valid dataFormat')
+  }
+
+  for(dataFormat of Object.keys(typeMap)) {
+    typeMap[dataFormat].asBaseValue = Math.pow(defaultUnit[typeMap[dataFormat].type],typeMap[dataFormat].unitOrder)
+  }
+
+  const convert = function(value, from, to) {
+    if (isNumber(value)) {
+      if (typeMap[from]) {
+        if(typeMap[to]) {
+          const fromIsByte = isByte(from)
+          const toIsByte = isByte(to)
+          let asBaseValue = -1
+          if ((fromIsByte && toIsByte) || (!fromIsByte && !toIsByte)) {
+            asBaseValue = value * typeMap[from].asBaseValue //  the value in bit or byte * the value of his dataFormat in bit or byte
+          } else if (fromIsByte && !toIsByte) {
+            asBaseValue = value * typeMap[from].asBaseValue * 8 //  the value in byte * the value of his dataFormat in byte * 8 to make this value in bit as 1 byte = 8 bit
+          } else if (!fromIsByte && toIsByte) {
+            asBaseValue = value * typeMap[from].asBaseValue / 8//  the value in bit * the value of his dataFormat in bit / 8 to make this value in byte as 8 bit = 1 byte
+          }
+          return asBaseValue / typeMap[to].asBaseValue // the value in bit or byte (depend in from e to dataFormat) / the value of the to data format in bit or byte
+        } else throw new Error('"to" paramater isn\'t a valid dataFormat')
+      } else throw new Error('"from" paramater isn\'t a valid dataFormat')
+    } else throw new Error('"value" paramater isn\'t a valid number')
+  }
+  const compareValue = function(value1, dataFormat1, value2, dataFormat2) {
+    if(isNumber(value1)){
+      if (typeMap[dataFormat1]) {
+        if(isNumber(value2)){
+          if (typeMap[dataFormat2]) {
+            if(dataFormat1 === dataFormat2) return 0
+            const val1 = convert(value1, dataFormat1, 'b')
+            const val2 = convert(value2, dataFormat2, 'b')
+
+            if(val1 < val2) return -1
+            if(val1 === val2) return 0
+            if(val1 > val2) return 1
+          } else throw new Error('"dataFormat2" paramater isn\'t a valid dataFormat')
+        } else throw new Error('"value2" paramater isn\'t a valid number')
+      } else throw new Error('"dataFormat1" paramater isn\'t a valid dataFormat')
+    } else throw new Error('"value1" paramater isn\'t a valid number')
+  }
+  const compareTo = function(dataFormat1,dataFormat2) {
+    return compareValue(1, dataFormat1, 1, dataFormat2)
+  }
+  return {
+    convert,
+    get list(){
+      return Object.assign({},typeMap)
+    },
+    isBit,
+    isByte,
+    isBinary,
+    isDecimal,
+    compareTo,
+    compareValue
+  }
 }
-
-const isByte = function (str) {
-  if (str && str.length && str.length > 0) {
-    const character = str[str.length - 1]
-    return character === character.toUpperCase()
-  } else throw new Error('not a valid string')
-}
-
-export default function convert (value, from, to) {
-  if (value) {
-    if (conversionMap[from] && conversionMap[to]) {
-      const fromIsByte = isByte(from)
-      const toIsByte = isByte(to)
-      let reduced = -1
-      if ((fromIsByte && toIsByte) || (!fromIsByte && !toIsByte)) {
-        reduced = value * conversionMap[from]
-      } else if (fromIsByte && !toIsByte) {
-        reduced = value * conversionMap[from] * 8
-      } else if (!fromIsByte && toIsByte) {
-        reduced = value * conversionMap[from] / 8
-      }
-      return reduced / conversionMap[to]
-    } else throw new Error('Can\'t find the conversion unit')
-  } else throw new Error('no value supplied')
+// console.log('module:',module)s
+if(module) {
+  module.exports = ByteArray
+  // console.log('module.exports exists:',module.exports)
 }

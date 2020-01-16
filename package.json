@@ -1,12 +1,15 @@
 {
   "name": "@wtfcode/byte-converter",
-  "version": "1.0.1",
+  "version": "1.5.0",
   "description": "Convert any value from a bit/byte unit measure to an another bit/byte measure, this package is compliant to IEC standard. EX: you can convert from KiB to kB or to Kib",
   "main": "index.js",
   "keywords": [
     "byte",
     "bit",
     "conversion",
+    "byte-converter",
+    "binary",
+    "decimal",
     "kilobit",
     "megabit",
     "megabyte",
@@ -14,12 +17,12 @@
   ],
   "author": "bomdia",
   "bugs": {
-    "url" : "https://github.com/bomdia/byte-converter/issues",
-    "email" : "project@hostname.com"
+    "url": "https://github.com/bomdia/byte-converter/issues",
+    "email": "bomdia.the.troll@gmail.com"
   },
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/bomdia/byte-converter.git"
+    "type": "git",
+    "url": "https://github.com/bomdia/byte-converter.git"
   },
   "license": "MIT"
 }
