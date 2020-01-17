@@ -102,9 +102,11 @@ const ByteConverter = function () {
       if (typeMap[dataFormat1]) {
         if(isNumber(value2)){
           if (typeMap[dataFormat2]) {
-            if(dataFormat1 === dataFormat2) return 0
-            const val1 = convert(value1, dataFormat1, 'b')
-            const val2 = convert(value2, dataFormat2, 'b')
+            function val(value){
+              return (dataFormat1 === 'b' || dataFormat1 === dataFormat2 ? value : convert(value, dataFormat1, 'b'))
+            }
+            const val1 = val(value1)
+            const val2 = val(value2)
 
             if(val1 < val2) return -1
             if(val1 === val2) return 0
@@ -131,7 +133,7 @@ const ByteConverter = function () {
   }
 }
 // console.log('module:',module)s
-if(module) {
+if(typeof module !== 'undefined') {
   module.exports = ByteConverter
   // console.log('module.exports exists:',module.exports)
 }
