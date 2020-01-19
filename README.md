@@ -133,6 +133,7 @@ PROVIDED getters:
 		- asBaseValue: the value of 1 of the unit in his base unit (decimal, binary)
 
 PROVIDED function:
+
 1.  **convert** -> convert byte value
 	- **parameter**:
 		- **value**: Number,
@@ -149,17 +150,17 @@ PROVIDED function:
 	- **parameter**:
 		- **dataFormat**: an available unit
 	- **throw** error on invalid unit
-	- **return** the converted value
+	- **return** true or false
 4.   **isBinary** ->assert if is Bynary Based
 	- **parameter**:
 		- **dataFormat**: an available unit
 	- **throw** error on invalid unit
-	- **return** the converted value
+	- **return** true or false
 5.   **isDecimal** -> assert if is Decimal Based
 	- **parameter**:
 		- **dataFormat**: an available unit
 	- **throw** error on invalid unit
-	- **return** the converted value
+	- **return** true or false
 6.   **compareTo** -> compare available unit
 	- **parameter**:
 		- **dataFormat1**: an available unit
