@@ -1,4 +1,11 @@
-const ByteConverter = function () {
+const ByteConverter = function (logs) {
+
+  logs = !!logs
+
+  const log = function (...args) {
+    if(logs) console.log(...args)
+  }
+
   const defaultUnit = {
     decimal: 1000,
     binary: 1024
@@ -97,33 +104,52 @@ const ByteConverter = function () {
       } else throw new Error('"from" paramater isn\'t a valid dataFormat')
     } else throw new Error('"value" paramater isn\'t a valid number')
   }
-  const compareValue = function(value1, dataFormat1, value2, dataFormat2) {
+  const compareValue = function(value1, dataFormat1, value2, dataFormat2, isDescendent) {
+    isDescendent = (isDescendent?!!isDescendent:false)
     if(isNumber(value1)){
       if (typeMap[dataFormat1]) {
         if(isNumber(value2)){
           if (typeMap[dataFormat2]) {
-            function val(value){
-              return (dataFormat1 === 'b' || dataFormat1 === dataFormat2 ? value : convert(value, dataFormat1, 'b'))
+            function val(value, dataformat){
+              if(dataformat === 'b' || dataFormat1 === dataFormat2) {
+                return value
+              } else {
+                return convert(value, dataformat, 'b')
+              }
             }
-            const val1 = val(value1)
-            const val2 = val(value2)
-
-            if(val1 < val2) return -1
+            const val1 = val(value1, dataFormat1)
+            const val2 = val(value2, dataFormat2)
+            log('isDescendent:', isDescendent)
+            log('val1:', val1, 'val2:', val2)
+            if(val1 < val2) return (isDescendent ? 1 : -1)
             if(val1 === val2) return 0
-            if(val1 > val2) return 1
+            if(val1 > val2) return (isDescendent ? -1 : 1)
           } else throw new Error('"dataFormat2" paramater isn\'t a valid dataFormat')
         } else throw new Error('"value2" paramater isn\'t a valid number')
       } else throw new Error('"dataFormat1" paramater isn\'t a valid dataFormat')
     } else throw new Error('"value1" paramater isn\'t a valid number')
   }
-  const compareTo = function(dataFormat1,dataFormat2) {
-    return compareValue(1, dataFormat1, 1, dataFormat2)
+  const compareTo = function(dataFormat1, dataFormat2, isDescendent) {
+    return compareValue(16, dataFormat1, 16, dataFormat2, isDescendent)
   }
   return {
-    convert,
-    get list(){
+    get typeMap(){
       return Object.assign({},typeMap)
     },
+    get typeList(){
+      const arr = []
+      for(const unit of Object.keys(typeMap)){
+        arr.push({unit, ...typeMap[unit]})
+      }
+      arr.sort(
+        function(a, b){
+          log('a:',a,'b:',b)
+          return compareTo(a.unit,b.unit)
+        }
+      )
+      return arr
+    },
+    convert,
     isBit,
     isByte,
     isBinary,
