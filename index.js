@@ -200,8 +200,7 @@ const ByteConverter = function (logs) {
     function scale(filteredList) {
       log('scale int fn called:',filteredList)
       for(let i = 0; i<filteredList.length; i++){
-        const { dataFormat } = filteredList[i]
-        const newVal = obj.convert(value,dataFormat.dataFormat,dataFormat)
+        const newVal = obj.convert(value,dataFormat.dataFormat,filteredList[i].dataFormat)
         log('newVal:',newVal, 'newUnit:',unit)
         if((newVal < 1000 && newVal >= 1) || i === filteredList.length-1) {
           return {value:newVal, unit}
