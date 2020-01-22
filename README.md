@@ -146,6 +146,7 @@ PROVIDED getters:
 		- preferOppositeUnit: false,
 		- handler: (curDataFormat,isUppingDataFormat) => { return true }
 
+
 PROVIDED function:
 
 |Name|Description|Parameter|Throws|Return|
