@@ -1,7 +1,7 @@
 
 # byte-converter
-Convert any value from a bit/byte unit measure to an another bit/byte measure, this package is compliant to IEC standard. EX: you can convert from KiB to kB or to Kib
-
+Convert any value from a bit/byte dataFormat to an another bit/byte dataFormat, this package is compliant to IEC standard. EX: you can convert from KiB to kB or to Kib
+Use the autoScale function for scale a given value and dataFormat to te best dataFormat for representing the value
 HOW TO USE:
 
 ES6 syntax:
