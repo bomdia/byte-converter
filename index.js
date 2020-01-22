@@ -201,9 +201,9 @@ const ByteConverter = function (logs) {
       log('scale int fn called:',filteredList)
       for(let i = 0; i<filteredList.length; i++){
         const newVal = obj.convert(value,dataFormat.dataFormat,filteredList[i].dataFormat)
-        log('newVal:',newVal, 'newUnit:',unit)
+        log('newVal:',newVal, 'newDataFormat:',filteredList[i].dataFormat)
         if((newVal < 1000 && newVal >= 1) || i === filteredList.length-1) {
-          return {value:newVal, unit}
+          return {value:newVal, dataFormat:filteredList[i].dataFormat}
         }
       }
       return retVal
@@ -213,8 +213,8 @@ const ByteConverter = function (logs) {
       log(options)
       if(options.preferSameBase && !(options.preferBinary || options.preferDecimal || options.preferOppositeBase)){
         log('isUppingDataFormat:',isUppingDataFormat)
-        log('isBaseUnit(curDataFormat.dataFormat):',isBaseDataFormat(curDataFormat.dataFormat))
-        log('isBaseUnit(dataFormat.dataFormat):',isBaseDataFormat(dataFormat.dataFormat))
+        log('isBaseDataFormat(curDataFormat.dataFormat):',isBaseDataFormat(curDataFormat.dataFormat))
+        log('isBaseDataFormat(dataFormat.dataFormat):',isBaseDataFormat(dataFormat.dataFormat))
         log('isDecimal(dataFormat.dataFormat):',isDecimal(dataFormat.dataFormat))
         log('isDecimal(curDataFormat.dataFormat)',isDecimal(curDataFormat.dataFormat))
         log('isBinary(dataFormat.dataFormat)',isBinary(dataFormat.dataFormat))
