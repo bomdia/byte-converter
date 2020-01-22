@@ -80,6 +80,11 @@ const ByteConverter = function (logs) {
       return typeMap[dataFormat].type === "decimal"
     } else throw new Error('"dataFormat" paramater isn\'t a valid dataFormat')
   }
+  const isBaseDataFormat =  function(dataFormat){
+    if(typeMap[dataFormat]) {
+      return dataFormat.toLowerCase() === 'b'
+    } else throw new Error('"dataFormat" paramater isn\'t a valid dataFormat')
+  }
 
   for(dataFormat of Object.keys(typeMap)) {
     typeMap[dataFormat].asBaseValue = Math.pow(defaultUnit[typeMap[dataFormat].type],typeMap[dataFormat].unitOrder)
@@ -130,21 +135,30 @@ const ByteConverter = function (logs) {
     } else throw new Error('"value1" paramater isn\'t a valid number')
   }
   const compareTo = function(dataFormat1, dataFormat2, isDescendent) {
-    return compareValue(16, dataFormat1, 16, dataFormat2, isDescendent)
+    return compareValue(1, dataFormat1, 1, dataFormat2, isDescendent)
   }
-  return {
+
+  const getDataFormat = function(dataFormat) {
+    if(typeMap[dataFormat]) {
+      const obj = Object.assign({},typeMap[dataFormat])
+      obj.dataFormat=dataFormat
+      return obj
+    } else throw new Error('"dataFormat" paramater isn\'t a valid dataFormat')
+  }
+
+  const obj ={
     get typeMap(){
       return Object.assign({},typeMap)
     },
     get typeList(){
       const arr = []
       for(const unit of Object.keys(typeMap)){
-        arr.push({unit, ...typeMap[unit]})
+        arr.push({dataFormat:unit, ...typeMap[unit]})
       }
       arr.sort(
         function(a, b){
           log('a:',a,'b:',b)
-          return compareTo(a.unit,b.unit)
+          return compareTo(a.dataFormat,b.dataFormat)
         }
       )
       return arr
@@ -154,8 +168,153 @@ const ByteConverter = function (logs) {
     isByte,
     isBinary,
     isDecimal,
+    isBaseDataFormat,
     compareTo,
-    compareValue
+    compareValue,
+    getDataFormat
+  }
+  const defaultAutoScaleOptions = {
+    preferByte: false,
+    preferBit: false,
+    preferBinary: false,
+    preferDecimal: false,
+    preferSameBase: true,
+    preferOppositeBase: false,
+    preferSameUnit: true,
+    preferOppositeUnit: false,
+    handler: (curDataFormat,isUppingDataFormat) => { return true }
+  }
+  const autoScale = function(value, dataFormat, options) {
+    if (!isNumber(value)) throw new Error('"value" paramater isn\'t a valid number')
+    dataFormat = getDataFormat(dataFormat)
+    options = options || defaultAutoScaleOptions
+    for(const defaultOption of Object.keys(defaultAutoScaleOptions)){
+      if(!( options[defaultOption] === true || options[defaultOption] === false) && defaultOption !== 'handler'){
+        options[defaultOption] = false
+      }
+      if( defaultOption === 'handler' && !(options[defaultOption] && typeof options[defaultOption] === 'function')){
+        options[defaultOption] = defaultAutoScaleOptions[defaultOption]
+      }
+    }
+    const retVal = {value,dataFormat:dataFormat.dataFormat}
+    function scale(filteredList) {
+      log('scale int fn called:',filteredList)
+      for(let i = 0; i<filteredList.length; i++){
+        const { unit } = filteredList[i]
+        const newVal = obj.convert(value,dataFormat.dataFormat,unit)
+        log('newVal:',newVal, 'newUnit:',unit)
+        if((newVal < 1000 && newVal >= 1) || i === filteredList.length-1) {
+          return {value:newVal, unit}
+        }
+      }
+      return retVal
+    }
+    const filterList = (curDataFormat,isUppingDataFormat) => {
+      let retVal = true
+      log(options)
+      if(options.preferSameBase && !(options.preferBinary || options.preferDecimal || options.preferOppositeBase)){
+        log('isUppingDataFormat:',isUppingDataFormat)
+        log('isBaseUnit(curDataFormat.dataFormat):',isBaseDataFormat(curDataFormat.dataFormat))
+        log('isBaseUnit(dataFormat.dataFormat):',isBaseDataFormat(dataFormat.dataFormat))
+        log('isDecimal(dataFormat.dataFormat):',isDecimal(dataFormat.dataFormat))
+        log('isDecimal(curDataFormat.dataFormat)',isDecimal(curDataFormat.dataFormat))
+        log('isBinary(dataFormat.dataFormat)',isBinary(dataFormat.dataFormat))
+        log('isBinary(curDataFormat.dataFormat)',isBinary(curDataFormat.dataFormat))
+
+        if(
+            !(isBaseDataFormat(curDataFormat.dataFormat) && !isUppingDataFormat) && (
+              isDecimal(dataFormat.dataFormat) !== isDecimal(curDataFormat.dataFormat) ||
+              isBinary(dataFormat.dataFormat) !== isBinary(curDataFormat.dataFormat)
+            )
+          ){
+          log('preferSameBase')
+          retVal = false
+        }
+      }
+      if(options.preferSameUnit && !(options.preferByte || options.preferBit || options.preferOppositeUnit)){
+        if(isByte(dataFormat.dataFormat) !== isByte(curDataFormat.dataFormat) ||
+            isBit(dataFormat.dataFormat) !== isBit(curDataFormat.dataFormat)
+          ){
+          log('preferSameUnit')
+          retVal = false
+        }
+      }
+      if(options.preferOppositeBase && !(options.preferBinary || options.preferDecimal || options.preferSameBase)){
+        if(
+            !(isBaseDataFormat(curDataFormat.dataFormat) && !isUppingDataFormat) && (
+              isDecimal(dataFormat.dataFormat) === isDecimal(curDataFormat.dataFormat) ||
+              isBinary(dataFormat.dataFormat) === isBinary(curDataFormat.dataFormat)
+            )
+          ){
+          log('preferOppositeBase')
+          retVal = false
+        }
+      }
+      if(options.preferOppositeUnit && !(options.preferByte || options.preferBit || options.preferSameUnit)){
+        if(isByte(dataFormat.dataFormat) === isByte(curDataFormat.dataFormat) ||
+            isBit(dataFormat.dataFormat) === isBit(curDataFormat.dataFormat)
+          ){
+          log('preferOppositeUnit')
+          retVal = false
+        }
+      }
+      if(!options.preferSameBase && !options.preferOppositeBase && options.preferBinary && !options.preferDecimal) {
+        if(isDecimal(curDataFormat.dataFormat)){
+          log('preferBinary')
+          retVal = false
+        }
+      }
+      if(!options.preferSameBase && !options.preferOppositeBase && !options.preferBinary && options.preferDecimal) {
+        if(isBinary(curDataFormat.dataFormat)){
+          log('preferDecimal')
+          retVal = false
+        }
+      }
+      if(!options.preferSameUnit && !options.preferOppositeUnit && options.preferByte && !options.preferBit){
+        if(isBit(curDataFormat.dataFormat)){
+          log('preferByte')
+          retVal = false
+        }
+      }
+      if(!options.preferSameUnit && !options.preferOppositeUnit && !options.preferByte && options.preferBit){
+        if(isByte(curDataFormat.dataFormat)){
+          log('preferBit')
+          retVal = false
+        }
+      }
+      return retVal
+    }
+    if(value >= 1000){
+      log('value bigger or equals to 1000')
+      const filteredList = obj.typeList.filter((curDataFormat)=>{
+        const compare = obj.compareTo(dataFormat.dataFormat,curDataFormat.dataFormat)
+        const filter = (compare < 0 ? filterList(curDataFormat,true) : true)
+        const handler =  options.handler(curDataFormat,true)
+        log('curDataFormat:',curDataFormat,'compareTo:',compare,'filter:',filter,'handler:',handler)
+        return compare < 0 && filter && handler
+      })
+      return scale(filteredList,true)
+    } else if(value < 1){
+      log('value less then 1')
+      const filteredList = obj.typeList.filter((curDataFormat)=>{
+        const compare = obj.compareTo(dataFormat.dataFormat,curDataFormat.dataFormat)
+        const filter = (compare > 0 ? filterList(curDataFormat,false) : true)
+        const handler =  options.handler(curDataFormat,false)
+        log('curDataFormat:',curDataFormat,'compareTo:',compare,'filter:',filter,'handler:',handler)
+        return compare > 0 && filter && handler
+      })
+      filteredList.sort((a, b) => {return compareTo(a.dataFormat,b.dataFormat,true)})
+      return scale(filteredList,false)
+    }
+    return retVal
+  }
+
+  return {
+    ...obj,
+    autoScale,
+    get defaultAutoScaleOptions(){
+      return Object.assign({},defaultAutoScaleOptions)
+    }
   }
 }
 // console.log('module:',module)s

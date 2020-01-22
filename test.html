@@ -1,0 +1,58 @@
+<html>
+	<head>
+		<title> test </title>
+		<style>
+			input[type=button] {
+			  width: 100px
+			}
+		</style>
+		<script src="index.js"></script>
+		<script>
+		function ready(){
+			console.log('ready called')
+			converter = new ByteConverter()
+			result = document.getElementById("result")
+			selFrom = document.getElementById("selectFrom")
+			selTo = document.getElementById("selectTo")
+			val = document.getElementById("val")
+			function recurseListAndCreateElement(destination, isDescendent) {
+				sorted = converter.typeList.sort(function(a,b){return converter.compareTo(a.dataFormat,b.dataFormat,isDescendent)})
+				for({unit, name} of sorted){
+					opt = document.createElement('option')
+					opt.value = unit
+					opt.innerText = '(' + unit + ') ' + name
+					destination.appendChild(opt)
+				}
+			}
+			recurseListAndCreateElement(selFrom)
+			recurseListAndCreateElement(selTo,true)
+		}
+		function calc(){
+			result.value = converter.convert(val.value, selFrom.value, selTo.value)
+		}
+		function change() {
+			from = selFrom.value
+			to = selTo.value
+			selTo.value = from
+			selFrom.value = to
+		}
+		window.onload = function(){ ready() }
+		</script>
+	</head>
+	<body>
+		<table>
+			<tr>
+				<td>from:</td>
+				<td><input type="text" id="val"></input></td>
+				<td><select id="selectFrom"></select></td>
+				<td><input type="button" onclick="change()" value="switch"></input></td>
+			</tr>
+			<tr>
+				<td>to:</td>
+				<td><input type="text" disabled id="result"></input></td>
+				<td><select id="selectTo"></select></td>
+				<td><input type="button" onclick="calc()" value="calc"></input></td>
+			</tr>
+		</table>
+	</body>
+</html>
