@@ -1,6 +1,6 @@
 {
   "name": "@wtfcode/byte-converter",
-  "version": "1.6.5",
+  "version": "1.7",
   "description": "Convert any value from a bit/byte unit measure to an another bit/byte measure, this package is compliant to IEC standard. EX: you can convert from KiB to kB or to Kib, Use the autoScale function for scale a given value and dataFormat to te best dataFormat for representing the value.",
   "main": "dist/byte-converter.umd.js",
   "module": "dist/byte-converter.esm.js",
@@ -17,7 +17,8 @@
     "build:types": "tsc -t es5 --outdir src --declaration --emitDeclarationOnly src/byte-converter.class.ts && move .\\src\\byte-converter.class.d.ts .\\dist\\byte-converter.d.ts",
     "lint:fix": "eslint --ext .js,.vue -f ./node_modules/eslint-friendly-formatter --fix src build test.html",
     "lint": "eslint --ext .js,.vue -f ./node_modules/eslint-friendly-formatter src build test.html",
-    "pre-build": "yarn lint:fix & yarn build:types & yarn lint:fix"
+    "pre-build": "yarn lint:fix & yarn build:types & yarn lint:fix",
+    "publish": "npm publish --access public"
   },
   "keywords": [
     "byte",
