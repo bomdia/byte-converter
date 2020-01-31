@@ -283,7 +283,7 @@ class ByteConverter {
 
   compareValue (value1, dataFormat1, value2, dataFormat2, isDescendent) {
     isDescendent = (isDescendent ? !!isDescendent : false)
-    function val (value, dataformat) {
+    const val = (value, dataformat) => {
       if (dataformat === 'b' || dataFormat1 === dataFormat2) {
         return value
       } else {
