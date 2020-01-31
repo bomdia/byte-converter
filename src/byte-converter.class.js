@@ -83,7 +83,7 @@ class ByteConverter {
       arr.push({ ...this.typeMap[unit] })
     }
     arr.sort(
-      function (a, b) {
+      (a, b) => {
         this.log('a:', a, 'b:', b)
         return this.compareTo(a.dataFormat, b.dataFormat)
       }
