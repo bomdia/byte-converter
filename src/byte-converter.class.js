@@ -64,8 +64,8 @@ function isNumber (value) {
 }
 
 class ByteConverter {
-  constructor ({ logs = false }) {
-    this.logs = !!logs
+  constructor (options = { logs: false }) {
+    this.logs = !!options.logs
     this.__compiledTypeMap = Object.assign({}, defaultTypeMap)
     for (const dataFormat of Object.keys(this.__compiledTypeMap)) {
       this.__compiledTypeMap[dataFormat].asBaseValue = Math.pow(defaultUnit[this.__compiledTypeMap[dataFormat].type], this.__compiledTypeMap[dataFormat].unitOrder)
@@ -80,7 +80,7 @@ class ByteConverter {
   get typeList () {
     const arr = []
     for (const unit of Object.keys(this.typeMap)) {
-      arr.push({ dataFormat: unit, ...this.typeMap[unit] })
+      arr.push({ ...this.typeMap[unit] })
     }
     arr.sort(
       function (a, b) {

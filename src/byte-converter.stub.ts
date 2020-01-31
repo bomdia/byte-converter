@@ -1,21 +1,41 @@
 class ByteConverter {
   logs: boolean
 
-  constructor ({ logs = false }) {
-    this.logs = !!logs
+  constructor (options = { logs: false }) {
+    this.logs = !!options.logs
   }
 
   get typeMap ():Object {
     return {}
   }
 
-  get typeList (): Array<Object> {
-    const arr = [{}]
+  get typeList (): Array<{ dataFormat: string, name: string, type: string, unitOrder: number, asBaseValue: number }> {
+    const arr = [{ type: null, unitOrder: null, name: null, asBaseValue: null, dataFormat: null}]
     return arr
   }
 
-  get defaultAutoScaleOptions (): Object {
-    return {}
+  get defaultAutoScaleOptions (): {
+    preferByte: false,
+    preferBit: false,
+    preferBinary: false,
+    preferDecimal: false,
+    preferSameBase: true,
+    preferOppositeBase: false,
+    preferSameUnit: true,
+    preferOppositeUnit: false,
+    handler: Function
+  } {
+    return {
+      preferByte: false,
+      preferBit: false,
+      preferBinary: false,
+      preferDecimal: false,
+      preferSameBase: true,
+      preferOppositeBase: false,
+      preferSameUnit: true,
+      preferOppositeUnit: false,
+      handler: (curDataFormat: string, isUppingDataFormat: boolean):boolean => { return true }
+    }
   }
 
   convert (value: number, from: string, to: string): number {
@@ -28,8 +48,8 @@ class ByteConverter {
     } else throw new Error('"value" paramater isn\'t a valid number')
   }
 
-  autoScale (value: number, dataFormat: string, options: Object): Object {
-    return {}
+  autoScale (value: number, dataFormat: string, options=this.defaultAutoScaleOptions): {value:number,dataFormat:string} {
+    return {value:null,dataFormat:null}
   }
 
   isByte (dataFormat: string): boolean {
@@ -62,9 +82,9 @@ class ByteConverter {
     } else throw new Error('"dataFormat" paramater isn\'t a valid dataFormat')
   }
 
-  getDataFormat (dataFormat: string): Object {
+  getDataFormat (dataFormat: string): { dataFormat: string, name: string, type: string, unitOrder: number, asBaseValue: number } {
     if (this.typeMap[dataFormat]) {
-      return {}
+      return { type: null, unitOrder: null, name: null, asBaseValue: null, dataFormat: null}
     } else throw new Error('"dataFormat" paramater isn\'t a valid dataFormat')
   }
 

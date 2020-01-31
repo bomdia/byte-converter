@@ -1,19 +1,54 @@
 declare class ByteConverter {
     logs: boolean;
-    constructor({ logs }: {
-        logs?: boolean;
+    constructor(options?: {
+        logs: boolean;
     });
     get typeMap(): Object;
-    get typeList(): Array<Object>;
-    get defaultAutoScaleOptions(): Object;
+    get typeList(): Array<{
+        dataFormat: string;
+        name: string;
+        type: string;
+        unitOrder: number;
+        asBaseValue: number;
+    }>;
+    get defaultAutoScaleOptions(): {
+        preferByte: false;
+        preferBit: false;
+        preferBinary: false;
+        preferDecimal: false;
+        preferSameBase: true;
+        preferOppositeBase: false;
+        preferSameUnit: true;
+        preferOppositeUnit: false;
+        handler: Function;
+    };
     convert(value: number, from: string, to: string): number;
-    autoScale(value: number, dataFormat: string, options: Object): Object;
+    autoScale(value: number, dataFormat: string, options?: {
+        preferByte: false;
+        preferBit: false;
+        preferBinary: false;
+        preferDecimal: false;
+        preferSameBase: true;
+        preferOppositeBase: false;
+        preferSameUnit: true;
+        preferOppositeUnit: false;
+        handler: Function;
+    }): {
+        value: number;
+        dataFormat: string;
+    };
     isByte(dataFormat: string): boolean;
     isBit(dataFormat: string): boolean;
     isBinary(dataFormat: string): boolean;
     isDecimal(dataFormat: string): boolean;
     isBaseDataFormat(dataFormat: string): boolean;
-    getDataFormat(dataFormat: string): Object;
+    getDataFormat(dataFormat: string): {
+        dataFormat: string;
+        name: string;
+        type: string;
+        unitOrder: number;
+        asBaseValue: number;
+    };
     compareValue(value1: number, dataFormat1: string, value2: number, dataFormat2: string, isDescendent: boolean): number;
     compareTo(dataFormat1: string, dataFormat2: string, isDescendent: boolean): number;
 }
