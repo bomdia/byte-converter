@@ -133,7 +133,7 @@
         }
       }
       const retVal = { value, dataFormat: dataFormat.dataFormat };
-      function scale (filteredList) {
+      const scale = (filteredList) => {
         this.log('scale int fn called:', filteredList);
         for (let i = 0; i < filteredList.length; i++) {
           const newVal = this.convert(value, dataFormat.dataFormat, filteredList[i].dataFormat);
@@ -143,7 +143,7 @@
           }
         }
         return retVal
-      }
+      };
       const filterList = (curDataFormat, isUppingDataFormat) => {
         let retVal = true;
         this.log(options);
