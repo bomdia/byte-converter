@@ -14,7 +14,7 @@
     "no-prebuild-build:umd": "rollup --config build/rollup.config.js --format umd --file dist/byte-converter.umd.js",
     "no-prebuild-build:es": "rollup --config build/rollup.config.js --format es --file dist/byte-converter.esm.js",
     "no-prebuild-build:unpkg": "rollup --config build/rollup.config.js --format iife --file dist/byte-converter.min.js",
-    "build:types": "tsc -t es5 --outdir src --declaration --emitDeclarationOnly src/byte-converter.stub.ts && move .\\src\\byte-converter.class.d.ts .\\dist\\byte-converter.d.ts",
+    "build:types": "tsc -t es5 --outdir src --declaration --emitDeclarationOnly src/byte-converter.stub.ts && move .\\src\\byte-converter.stub.d.ts .\\dist\\byte-converter.d.ts",
     "lint:fix": "eslint --ext .js,.vue -f ./node_modules/eslint-friendly-formatter --fix src build test.html",
     "lint": "eslint --ext .js,.vue -f ./node_modules/eslint-friendly-formatter src build test.html",
     "pre-build": "yarn lint:fix & yarn build:types & yarn lint:fix"

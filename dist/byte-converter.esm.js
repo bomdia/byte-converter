@@ -79,10 +79,10 @@ class ByteConverter {
   get typeList () {
     const arr = [];
     for (const unit of Object.keys(this.typeMap)) {
-      arr.push({ dataFormat: unit, ...this.typeMap[unit] });
+      arr.push({ ...this.typeMap[unit] });
     }
     arr.sort(
-      function (a, b) {
+      (a, b) => {
         this.log('a:', a, 'b:', b);
         return this.compareTo(a.dataFormat, b.dataFormat)
       }
