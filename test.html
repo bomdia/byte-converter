@@ -1,3 +1,4 @@
+
 <html>
 	<head>
 		<title> test </title>
@@ -8,35 +9,36 @@
 		</style>
 		<script src="index.js"></script>
 		<script>
-		function ready(){
-			console.log('ready called')
-			converter = new ByteConverter()
-			result = document.getElementById("result")
-			selFrom = document.getElementById("selectFrom")
-			selTo = document.getElementById("selectTo")
-			val = document.getElementById("val")
-			function recurseListAndCreateElement(destination, isDescendent) {
-				sorted = converter.typeList.sort(function(a,b){return converter.compareTo(a.dataFormat,b.dataFormat,isDescendent)})
-				for({unit, name} of sorted){
-					opt = document.createElement('option')
-					opt.value = unit
-					opt.innerText = '(' + unit + ') ' + name
-					destination.appendChild(opt)
-				}
-			}
-			recurseListAndCreateElement(selFrom)
-			recurseListAndCreateElement(selTo,true)
+		function ready () {
+		  console.log('ready called')
+		  /* global ByteConverter */
+		  window.converter = new ByteConverter()
+		  window.result = document.getElementById('result')
+		  window.selFrom = document.getElementById('selectFrom')
+		  window.selTo = document.getElementById('selectTo')
+		  window.val = document.getElementById('val')
+		  function recurseListAndCreateElement (destination, isDescendent) {
+		    const sorted = window.converter.typeList.sort(function (a, b) { return window.converter.compareTo(a.dataFormat, b.dataFormat, isDescendent) })
+		    for (const { dataFormat, name } of sorted) {
+		      const opt = document.createElement('option')
+		      opt.value = dataFormat
+		      opt.innerText = '(' + dataFormat + ') ' + name
+		      destination.appendChild(opt)
+		    }
+		  }
+		  recurseListAndCreateElement(window.selFrom)
+		  recurseListAndCreateElement(window.selTo, true)
 		}
-		function calc(){
-			result.value = converter.convert(val.value, selFrom.value, selTo.value)
+		function calc () {
+		  window.result.value = window.converter.convert(window.val.value, window.selFrom.value, window.selTo.value)
 		}
-		function change() {
-			from = selFrom.value
-			to = selTo.value
-			selTo.value = from
-			selFrom.value = to
+		function change () {
+		  const from = window.selFrom.value
+		  const to = window.selTo.value
+		  window.selTo.value = from
+		  window.selFrom.value = to
 		}
-		window.onload = function(){ ready() }
+		window.onload = function () { ready() }
 		</script>
 	</head>
 	<body>
