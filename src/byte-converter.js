@@ -318,8 +318,4 @@ const ByteConverter = function (logs) {
     }
   }
 }
-// console.log('module:',module)s
-if (typeof module !== 'undefined') {
-  module.exports = ByteConverter
-  // console.log('module.exports exists:',module.exports)
-}
+export default ByteConverter

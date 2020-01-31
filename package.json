@@ -1,11 +1,23 @@
 {
   "name": "@wtfcode/byte-converter",
-  "version": "1.6.3",
+  "version": "1.6.5",
   "description": "Convert any value from a bit/byte unit measure to an another bit/byte measure, this package is compliant to IEC standard. EX: you can convert from KiB to kB or to Kib, Use the autoScale function for scale a given value and dataFormat to te best dataFormat for representing the value.",
-  "main": "index.js",
+  "main": "dist/byte-converter.umd.js",
+  "module": "dist/byte-converter.esm.js",
+  "unpkg": "dist/byte-converter.min.js",
+  "types": "dist/byte-converter.d.ts",
   "scripts": {
-    "lint:fix": "eslint --ext .js,.vue -f ./node_modules/eslint-friendly-formatter --fix index.js test.html",
-    "lint": "eslint --ext .js,.vue -f ./node_modules/eslint-friendly-formatter index.js test.html"
+    "build": "yarn pre-build & yarn no-prebuild-build:umd & yarn no-prebuild-build:es & yarn no-prebuild-build:unpkg",
+    "build:umd": "yarn pre-build & rollup --config build/rollup.config.js --format umd --file dist/byte-converter.umd.js",
+    "build:es": "yarn pre-build & rollup --config build/rollup.config.js --format es --file dist/byte-converter.esm.js",
+    "build:unpkg": "yarn pre-build & rollup --config build/rollup.config.js --format iife --file dist/byte-converter.min.js",
+    "no-prebuild-build:umd": "rollup --config build/rollup.config.js --format umd --file dist/byte-converter.umd.js",
+    "no-prebuild-build:es": "rollup --config build/rollup.config.js --format es --file dist/byte-converter.esm.js",
+    "no-prebuild-build:unpkg": "rollup --config build/rollup.config.js --format iife --file dist/byte-converter.min.js",
+    "build:types": "tsc -t es5 --outdir src --declaration --emitDeclarationOnly src/byte-converter.class.ts && move .\\src\\byte-converter.class.d.ts .\\dist\\byte-converter.d.ts",
+    "lint:fix": "eslint --ext .js,.vue -f ./node_modules/eslint-friendly-formatter --fix src build test.html",
+    "lint": "eslint --ext .js,.vue -f ./node_modules/eslint-friendly-formatter src build test.html",
+    "pre-build": "yarn lint:fix & yarn build:types & yarn lint:fix"
   },
   "keywords": [
     "byte",
@@ -31,7 +43,11 @@
     "eslint-plugin-import": "^2.20.0",
     "eslint-plugin-node": "^11.0.0",
     "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.1"
+    "eslint-plugin-standard": "^4.0.1",
+    "rollup": "^1.31.0",
+    "@rollup/plugin-buble": "^0.21.0",
+    "@rollup/plugin-commonjs": "^11.0.1",
+    "@rollup/plugin-node-resolve": "7.0.0"
   },
   "author": "bomdia",
   "bugs": {

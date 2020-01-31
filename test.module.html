@@ -7,13 +7,11 @@
 			  width: 100px
 			}
 		</style>
-		<script src="dist/byte-converter.min.js"></script>
-		<script>
+		<script type="module">
+		import ByteConverter from './dist/byte-converter.min.js'
 		function ready () {
 		  console.log('ready called')
-		  /* global ByteConverter */
-		  /* eslint new-cap: ["error", { "newIsCap": false }] */
-		  window.converter = new ByteConverter.default()
+		  window.converter = new ByteConverter()
 		  window.result = document.getElementById('result')
 		  window.selFrom = document.getElementById('selectFrom')
 		  window.selTo = document.getElementById('selectTo')

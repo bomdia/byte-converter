@@ -10,6 +10,10 @@ ES6 syntax:
 
     const byteConverter = new ByteConverter()
     console.log(byteConverter.convert(1,'B','b')) //will output 8
+    console.log(byteConverter.autoScale(1024,'B'))
+    //will output:
+    {value: 1, dataFormat: "KiB"} // the function return the value and the final dataFormat
+
 
 ES5 syntax:
 
@@ -18,66 +22,72 @@ ES5 syntax:
     const byteConverter = new ByteConverter()
     console.log(byteConverter.convert(1024,'MiB','GiB')) //will output 1
 
+    console.log(byteConverter.autoScale(0.7,'GB')) //the function accept a third paramater: an object with some property
+    //will output:
+    {value: 700, dataFormat: "MB"}
+
 BROWSER use example
 
+
     <html>
-    	<head>
-    		<title> test </title>
-    		<style>
-    			input[type=button] {
-    			  width: 100px
-    			}
-    		</style>
-    		<script src="/byte-converter/index.js"></script>
-    		<script>
-    		function ready(){
-    			console.log('ready called')
-    			converter = new ByteConverter()
-    			result = document.getElementById("result")
-    			selFrom = document.getElementById("selectFrom")
-    			selTo = document.getElementById("selectTo")
-    			val = document.getElementById("val")
-    			function recurseListAndCreateElement(destination, isDescendent) {
-    				sorted = converter.typeList.sort(function(a,b){return converter.compareTo(a.unit,b.unit,isDescendent)})
-    				for({unit, name} of sorted){
-    					opt = document.createElement('option')
-    					opt.value = unit
-    					opt.innerText = '(' + unit + ') ' + name
-    					destination.appendChild(opt)
-    				}
-    			}
-    			recurseListAndCreateElement(selFrom)
-    			recurseListAndCreateElement(selTo,true)
-    		}
-    		function calc(){
-    			result.value = converter.convert(val.value, selFrom.value, selTo.value)
-    		}
-    		function change() {
-    			from = selFrom.value
-    			to = selTo.value
-    			selTo.value = from
-    			selFrom.value = to
-    		}
-    		window.onload = function(){ ready() }
-    		</script>
-    	</head>
-    	<body>
-    		<table>
-    			<tr>
-    				<td>from:</td>
-    				<td><input type="text" id="val"></input></td>
-    				<td><select id="selectFrom"></select></td>
-    				<td><input type="button" onclick="change()" value="switch"></input></td>
-    			</tr>
-    			<tr>
-    				<td>to:</td>
-    				<td><input type="text" disabled id="result"></input></td>
-    				<td><select id="selectTo"></select></td>
-    				<td><input type="button" onclick="calc()" value="calc"></input></td>
-    			</tr>
-    		</table>
-    	</body>
+      <head>
+        <title> test </title>
+        <style>
+          input[type=button] {
+            width: 100px
+          }
+        </style>
+        <script src="dist/byte-converter.min.js"></script>
+        <script>
+        function ready () {
+          console.log('ready called')
+          window.converter = new ByteConverter.default()
+          window.result = document.getElementById('result')
+          window.selFrom = document.getElementById('selectFrom')
+          window.selTo = document.getElementById('selectTo')
+          window.val = document.getElementById('val')
+          function recurseListAndCreateElement (destination, isDescendent) {
+            const sorted = window.converter.typeList.sort(function (a, b) { return window.converter.compareTo(a.dataFormat, b.dataFormat, isDescendent) })
+            for (const { dataFormat, name } of sorted) {
+              const opt = document.createElement('option')
+              opt.value = dataFormat
+              opt.innerText = '(' + dataFormat + ') ' + name
+              destination.appendChild(opt)
+            }
+          }
+          recurseListAndCreateElement(window.selFrom)
+          recurseListAndCreateElement(window.selTo, true)
+        }
+        function calc () {
+          window.result.value = window.converter.convert(window.val.value, window.selFrom.value, window.selTo.value)
+        }
+        function change () {
+          const from = window.selFrom.value
+          const to = window.selTo.value
+          window.selTo.value = from
+          window.selFrom.value = to
+        }
+        window.onload = function () { ready() }
+        </script>
+      </head>
+      <body>
+        <table>
+          <tr>
+            <td>from:</td>
+            <td><input type="text" id="val"></input></td>
+            <td><select id="selectFrom"></select></td>
+            <td><input type="button" onclick="change()" value="switch"></input></td>
+          </tr>
+          <tr>
+            <td>to:</td>
+            <td><input type="text" disabled id="result"></input></td>
+            <td><select id="selectTo"></select></td>
+            <td><input type="button" onclick="calc()" value="calc"></input></td>
+          </tr>
+        </table>
+      </body>
     </html>
+
 AVAILABLE UNIT:
 
 dataFormat|bit|byte|binary|decimal|
@@ -117,8 +127,8 @@ dataFormat|bit|byte|binary|decimal|
 |Yib|X||X||
 |YiB||X|X||
 
-AVAILABLE class constructor paramater:
- 1. **logs**: Boolean (activate console.log of some thing is mostly useful for quick dev debug)
+AVAILABLE class constructor paramater object property:
+1. **logs**: Boolean (activate console.log of some thing is mostly useful for quick dev debug)
 
 PROVIDED getters:
 1. **typeMap**
