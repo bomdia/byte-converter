@@ -88,7 +88,7 @@ BROWSER use example
       </body>
     </html>
 
-AVAILABLE UNIT:
+AVAILABLE dataFormat:
 
 dataFormat|bit|byte|binary|decimal|
 |--|--|--|--|--|
@@ -132,18 +132,19 @@ AVAILABLE class constructor paramater object property:
 
 PROVIDED getters:
 1. **typeMap**
-	- return an object with as keys the available unit with an object that describe it:
-		- name: the name of the unit
+	- return an object with as keys the available dataFormat with an object that describe it:
+		- dataFormat: the dataFormat in iec notations
+		- name: the name of the dataFormat
 		- type: the type of the unit (decimal, binary)
-		- unitOrder:  the relative order for the unit (use compare function for comparing unit)
-		- asBaseValue: the value of 1 of the unit in his base unit (bit, byte)
+		- unitOrder:  the relative order for the dataFormat (use compare function for comparing dataFormat)
+		- asBaseValue: the value of 1 for the current dataformat in his base dataFormat (bit, byte)
 2. **typeList**
 	- return an ordered ascendant array of object:
-		- unit: the unit in iec notations
-		- name: the name of the unit
+		- dataFormat: the dataFormat in iec notations
+		- name: the name of the dataFormat
 		- type: the type of the unit (decimal, binary)
-		- unitOrder:  the relative order for the unit (use compare function for comparing unit)
-		- asBaseValue: the value of 1 of the unit in his base unit (bit, byte)
+		- unitOrder:  the relative order for the dataFormat (use compare function for comparing dataFormat)
+		- asBaseValue: the value of 1 for the current dataformat in his base dataFormat (bit, byte)
 3. **defaultAutoScaleOptions**
 	- return an object that represent the default autoScaleOption if the method is invoked without one:
 		- preferByte: false,
@@ -162,12 +163,12 @@ PROVIDED function:
 |Name|Description|Parameter|Throws|Return|
 |--|--|--|------|--|
 |**convert**|convert value from a dataFormat to another dataFormat|**value**: Number, **from**: available dataFormat, **to**: an available dataFormat| 3 different errors for each invalid parameter|the converted value as Number|
-|**autoScale**|scale automatically a value in a dataFormat to a better readable dataFormat, accept a custom option object if one of the available property isn't setted then is false|**value**: Number, **dataFormat**: an available dataFormat, **options**: (OPTIONAL) an object like the default one or one empty for not filtering the scaling process, the preference order is: preferSame>preferOpposite>prefer, you can set to true only 1 type of preference for base and unit, if an empty object is passed, all prefer will be false and therefore no defualt filtering will be applied|2 different errors for each invalid parameter|an object: { *value*: Number, *dataFormat*: the resulting dataFormat }|
-|**getDataFormat**|retrieve an object that describe the requested dataFormat|**dataFormat**: an available dataFormat|error on invalid dataFormat parameter|dataFormatObject: { **unit**: the unit in iec notations, **name**: the name of the unit, **type**: the type of the unit (decimal, binary), **unitOrder**:  the relative order for the unit (use compare function for comparing unit), **asBaseValue**: the value of 1 of the unit in his base unit (bit, byte) }|
-|**isBit**|assert if a dataFormat is in Bit Unit|**dataFormat**: an available dataFormat|error on invalid dataFormat parameter|Boolean|
-|**isByte**|assert if a dataFormat is in Byte Unit|**dataFormat**: an available dataFormat|error on invalid dataFormat parameter|Boolean|
-|**isBinary**|assert if a dataFormat is Binary Based|**dataFormat**: an available dataFormat|error on invalid dataFormat parameter|Boolean|
-|**isDecimal**|assert if a dataFormat is Decimal Based|**dataFormat**: an available dataFormat|error on invalid dataFormat parameter|Boolean|
+|**autoScale**|scale automatically a value in a dataFormat to a better readable dataFormat, accept a custom option object if one of the available property isn't setted then is false|**value**: Number, **dataFormat**: an available dataFormat, **options**: (OPTIONAL) an object like the default one or one empty for no default filtering the available dataFormat, the preference order is: preferSame>preferOpposite>prefer, you can set to true only 1 type of preference for base and unit|2 different errors for each invalid parameter|an object: { *value*: Number, *dataFormat*: the resulting dataFormat }|
+|**getDataFormat**|retrieve an object that describe the requested dataFormat|**dataFormat**: an available dataFormat|error on invalid dataFormat parameter|dataFormatObject: { **dataFormat**: the dataFormat in iec notations (b,B...) , **name**: the name of the dataFormat, **type**: the type of the unit (decimal, binary), **unitOrder**:  the relative order for the dataFormat (use compare function for comparing dataFormat), **asBaseValue**: the value of 1 for the current dataformat in his base dataFormat (bit, byte) }|
+|**isBit**|assert if a dataFormat is in Bit base|**dataFormat**: an available dataFormat|error on invalid dataFormat parameter|Boolean|
+|**isByte**|assert if a dataFormat is in Byte base|**dataFormat**: an available dataFormat|error on invalid dataFormat parameter|Boolean|
+|**isBinary**|assert if a dataFormat is Binary unit|**dataFormat**: an available dataFormat|error on invalid dataFormat parameter|Boolean|
+|**isDecimal**|assert if a dataFormat is Decimal unit|**dataFormat**: an available dataFormat|error on invalid dataFormat parameter|Boolean|
 |**isBaseDataFormat**|assert if a dataFormat is a bit or a byte|**dataFormat**: an available dataFormat|error on invalid dataFormat parameter|Boolean|
-|**compareTo**|compare available dataFormat|**dataFormat1**: an available unit, **dataFormat2**: an available dataFormat, **isDescendent**: Boolean|2 differents errors on invalid parameter|-1,0,1 in ascendent or descendent order|
-|**compareValue**|compare values with available units|**value1**: Number, **dataFormat1**: an available unit, **value2**: Number, **dataFormat2**: an available unit, **isDescendent**: Boolean|4 differents errors on invalid parameter|-1,0,1 in ascendent or descendent order|
+|**compareTo**|compare available dataFormat|**dataFormat1**: an available dataFormat, **dataFormat2**: an available dataFormat, **isDescendent**: Boolean|2 differents errors on invalid parameter|-1,0,1 in ascendent or descendent order|
+|**compareValue**|compare values with available dataFormats|**value1**: Number, **dataFormat1**: an available dataFormat, **value2**: Number, **dataFormat2**: an available dataFormat, **isDescendent**: Boolean|4 differents errors on invalid parameter|-1,0,1 in ascendent or descendent order|
