@@ -12,27 +12,27 @@ declare class ByteConverter {
         asBaseValue: number;
     }>;
     get defaultAutoScaleOptions(): {
-        preferByte: false;
-        preferBit: false;
-        preferBinary: false;
-        preferDecimal: false;
-        preferSameBase: true;
-        preferOppositeBase: false;
-        preferSameUnit: true;
-        preferOppositeUnit: false;
-        handler: Function;
+        preferByte: boolean;
+        preferBit: boolean;
+        preferBinary: boolean;
+        preferDecimal: boolean;
+        preferSameBase: boolean;
+        preferOppositeBase: boolean;
+        preferSameUnit: boolean;
+        preferOppositeUnit: boolean;
+        handler: (curDataFormat: string, isUppingDataFormat: boolean) => {};
     };
     convert(value: number, from: string, to: string): number;
     autoScale(value: number, dataFormat: string, options?: {
-        preferByte: false;
-        preferBit: false;
-        preferBinary: false;
-        preferDecimal: false;
-        preferSameBase: true;
-        preferOppositeBase: false;
-        preferSameUnit: true;
-        preferOppositeUnit: false;
-        handler: Function;
+        preferByte: boolean;
+        preferBit: boolean;
+        preferBinary: boolean;
+        preferDecimal: boolean;
+        preferSameBase: boolean;
+        preferOppositeBase: boolean;
+        preferSameUnit: boolean;
+        preferOppositeUnit: boolean;
+        handler: (curDataFormat: string, isUppingDataFormat: boolean) => {};
     }): {
         value: number;
         dataFormat: string;
