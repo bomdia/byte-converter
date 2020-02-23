@@ -2,6 +2,11 @@
 # byte-converter
 Convert any value from a bit/byte dataFormat to an another bit/byte dataFormat, this package is compliant to IEC standard. EX: you can convert from KiB to kB or to Kib
 Use the autoScale function for scale a given value and dataFormat to te best dataFormat for representing the value
+
+CHANGES:
+
+  1.7.10 => 1.7.11 (autoScale now choose between 1000 and 1024 if is decimal type or binary type, the autoscaling is now better)
+
 HOW TO USE:
 
 ES6 syntax:

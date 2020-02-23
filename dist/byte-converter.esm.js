@@ -213,8 +213,8 @@ class ByteConverter {
       }
       return retVal
     };
-    if (value >= 1000) {
-      this.log('value bigger or equals to 1000');
+    if (value >= defaultUnit[dataFormat.type]) {
+      this.log('value bigger or equals to ', defaultUnit[dataFormat.type], ' that is the defaultUnit of original value dataFormat type (', dataFormat.type, ')');
       const filteredList = this.typeList.filter((curDataFormat) => {
         const compare = this.compareTo(dataFormat.dataFormat, curDataFormat.dataFormat);
         const filter = (compare < 0 ? filterList(curDataFormat, true) : true);
