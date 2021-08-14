@@ -5,6 +5,7 @@ module.exports = {
   parserOptions: {
     sourceType: 'module'
   },
+
   env: {
     browser: true,
     node: true
@@ -13,10 +14,13 @@ module.exports = {
     __static: true
   },
   extends: [
-    'standard'
+    'standard',
+    'plugin:@typescript-eslint/eslint-recommended',
+    'plugin:@typescript-eslint/recommended'
   ],
   // required to lint *.vue files
   plugins: [
+    '@typescript-eslint',
     'html'
   ],
   // add your custom rules here

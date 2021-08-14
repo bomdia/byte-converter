@@ -9,37 +9,85 @@
 		</style>
 		<script src="dist/byte-converter.min.js"></script>
 		<script>
-		function ready () {
-		  console.log('ready called')
-		  /* global ByteConverter */
-		  /* eslint new-cap: ["error", { "newIsCap": false }] */
-		  window.converter = new ByteConverter.default()
-		  window.result = document.getElementById('result')
-		  window.selFrom = document.getElementById('selectFrom')
-		  window.selTo = document.getElementById('selectTo')
-		  window.val = document.getElementById('val')
-		  function recurseListAndCreateElement (destination, isDescendent) {
-		    const sorted = window.converter.typeList.sort(function (a, b) { return window.converter.compareTo(a.dataFormat, b.dataFormat, isDescendent) })
-		    for (const { dataFormat, name } of sorted) {
-		      const opt = document.createElement('option')
-		      opt.value = dataFormat
-		      opt.innerText = '(' + dataFormat + ') ' + name
-		      destination.appendChild(opt)
-		    }
-		  }
-		  recurseListAndCreateElement(window.selFrom)
-		  recurseListAndCreateElement(window.selTo, true)
-		}
-		function calc () {
-		  window.result.value = window.converter.convert(window.val.value, window.selFrom.value, window.selTo.value)
-		}
-		function change () {
-		  const from = window.selFrom.value
-		  const to = window.selTo.value
-		  window.selTo.value = from
-		  window.selFrom.value = to
-		}
-		window.onload = function () { ready() }
+      function calc (val) {
+        const value = val || window.val.value
+        const from = window.converter.dataFormats[window.selFrom.value].value(value)
+
+        if (window.selTo.value !== 'auto') {
+          window.result.value = window.converter.convert(from, window.converter.dataFormats[window.selTo.value]).formatted
+        } else {
+          const opt = { type: window.autoBase(), unit: window.autoUnit() }
+          const val = window.converter.autoScale(from, opt)
+          window.result.value = val.formatted
+        }
+      }
+      function change () {
+        if (window.selTo.value !== 'auto') {
+          const from = window.selFrom.value
+          const to = window.selTo.value
+          window.selTo.value = from
+          window.selFrom.value = to
+          calc()
+        }
+      }
+      function ready () {
+        console.log('ready called')
+        /* global ByteConverter */
+        /* eslint new-cap: ["error", { "newIsCap": false }] */
+        window.converter = new ByteConverter.default()
+        window.result = document.getElementById('result')
+        window.selFrom = document.getElementById('selectFrom')
+        window.selTo = document.getElementById('selectTo')
+        window.val = document.getElementById('val')
+        window.autoOptionTable = document.getElementById('autotableoption')
+        window.autoBase = () => document.querySelector('input[name=autobase]:checked').value
+        window.autoUnit = () => document.querySelector('input[name=autounit]:checked').value
+
+        function recurseListAndCreateElement (destination, isDescendent, prependAuto) {
+          const sorted = window.converter.dataFormatsList.sort(function (a, b) { return window.converter.compareFormat(a, b, isDescendent) })
+          if (prependAuto) {
+            const opt = document.createElement('option')
+            opt.value = 'auto'
+            opt.innerText = '(auto)'
+            destination.appendChild(opt)
+          }
+          for (const { unit, name } of sorted) {
+            const opt = document.createElement('option')
+            opt.value = unit
+            opt.innerText = '(' + unit + ') ' + name
+            destination.appendChild(opt)
+          }
+        }
+        recurseListAndCreateElement(window.selFrom)
+        recurseListAndCreateElement(window.selTo, true, true)
+
+        window.val.onkeypress = evnt => {
+          try {
+            const curVal = window.val.value + evnt.key
+            const num = Number(curVal)
+            if (curVal !== '' && !isNaN(num)) {
+              calc(curVal)
+            } else {
+              evnt.preventDefault()
+            }
+          } catch (e) {
+            console.warn(e)
+            evnt.preventDefault()
+          }
+        }
+        window.selTo.onchange = evnt => {
+          if (window.selTo.value === 'auto') {
+            window.autoOptionTable.style.display = 'inherit'
+          } else {
+            window.autoOptionTable.style.display = 'none'
+          }
+          calc()
+        }
+        window.selFrom.onchange = evnt => {
+          calc()
+        }
+      }
+      window.onload = function () { ready() }
 		</script>
 	</head>
 	<body>
@@ -56,6 +104,40 @@
 				<td><select id="selectTo"></select></td>
 				<td><input type="button" onclick="calc()" value="calc"></input></td>
 			</tr>
+		</table>
+
+    <table id="autotableoption">
+			<tr>
+				<td colspan="4">Option for autoScale:</td>
+			</tr>
+      <tr>
+				<td colspan="2">Base:</td>
+				<td colspan="2">Unit:</td>
+			</tr>
+      <tr>
+        <td>preferSameBase</td>
+        <td><input type="radio" name="autobase" value ="same" checked /></td>
+        <td>preferSameUnit</td>
+        <td><input type="radio" name="autounit" value ="same" checked /></td>
+      </tr>
+      <tr>
+        <td>preferOppositeBase</td>
+        <td><input type="radio" name="autobase" value="opposite"/></td>
+        <td>preferOppositeUnit</td>
+        <td><input type="radio" name="autounit" value="opposite"/></td>
+      </tr>
+      <tr>
+        <td>preferDecimal</td>
+        <td><input type="radio" name="autobase" value="decimal"/></td>
+        <td>preferBit</td>
+        <td><input type="radio" name="autounit" value="bit"/></td>
+      </tr>
+      <tr>
+        <td>preferBinary</td>
+        <td><input type="radio" name="autobase" value="binary"/></td>
+        <td>preferByte</td>
+        <td><input type="radio" name="autounit" value="byte"/></td>
+      </tr>
 		</table>
 	</body>
 </html>
