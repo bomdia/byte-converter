@@ -1,14 +1,17 @@
-import { DataFormat, FormattedValue } from './dataFormat';
-import { DataFormatsMap, DataFormatUnit, IDataFormatAutoScaleOptions } from './types';
+import { Unit, UnitValue } from './unit';
+import { AutoScaleDefaultNames, AutoScaleOptionDefaults, UnitMap, UnitNames, IAutoScaleOptions } from './types';
 export declare class ByteConverter {
-    get dataFormats(): DataFormatsMap;
-    get dataFormatUnits(): DataFormatUnit[];
-    get dataFormatsList(): DataFormat[];
-    unit(unit: DataFormatUnit): DataFormat;
-    value(value: number, unit: DataFormat | DataFormatUnit): FormattedValue;
-    convert(from: FormattedValue, to: DataFormat | DataFormatUnit): FormattedValue;
-    compareFormat(from: DataFormat | DataFormatUnit, to: DataFormat | DataFormatUnit, descendent?: boolean): -1 | 0 | 1;
-    compareValue(from: FormattedValue, to: FormattedValue, descendent?: boolean): -1 | 0 | 1;
-    autoScale(from: FormattedValue, options?: IDataFormatAutoScaleOptions): FormattedValue;
+    static get units(): UnitMap;
+    static get unitNames(): UnitNames[];
+    static get unitsList(): Unit[];
+    static get autoScaleDefaults(): AutoScaleOptionDefaults;
+    static get autoScaleDefaultNames(): AutoScaleDefaultNames[];
+    static get autoScaleDefaultsList(): IAutoScaleOptions[];
+    static unit(unit: UnitNames): Unit;
+    static value(value: number, unit: Unit | UnitNames): UnitValue;
+    static convert(from: UnitValue, to: Unit | UnitNames): UnitValue;
+    static compareFormat(from: Unit | UnitNames, to: Unit | UnitNames, descendent?: boolean): -1 | 0 | 1;
+    static compareValue(from: UnitValue, to: UnitValue, descendent?: boolean): -1 | 0 | 1;
+    static autoScale(from: UnitValue, options?: IAutoScaleOptions): UnitValue;
 }
 export default ByteConverter;

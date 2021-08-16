@@ -1,11 +1,13 @@
-import { DataFormat } from './dataFormat'
+import { Unit } from './unit'
 
 export type UnitType = 'binary' | 'decimal'
-export const DataFormatType = {
+export const UnitTypeValue = {
   decimal: 1000,
   binary: 1024
 }
-export type DataFormatUnit = 'b' | 'B' | 'kb' | 'kB' | 'Kib' | 'KiB' | 'Mb' | 'MB' | 'Mib' | 'MiB' | 'Gb' | 'GB' | 'Gib' | 'GiB' | 'Tb' | 'TB' | 'Tib' | 'TiB' | 'Pb' | 'PB' | 'Pib' | 'PiB' | 'Eb' | 'EB' | 'Eib' | 'EiB' | 'Zb' | 'ZB' | 'Zib' | 'ZiB' | 'Yb' | 'YB' | 'Yib' | 'YiB'
+export type UnitNames = 'b' | 'B' | 'kb' | 'kB' | 'Kib' | 'KiB' | 'Mb' | 'MB' | 'Mib' | 'MiB' | 'Gb' | 'GB' | 'Gib' | 'GiB' | 'Tb' | 'TB' | 'Tib' | 'TiB' | 'Pb' | 'PB' | 'Pib' | 'PiB' | 'Eb' | 'EB' | 'Eib' | 'EiB' | 'Zb' | 'ZB' | 'Zib' | 'ZiB' | 'Yb' | 'YB' | 'Yib' | 'YiB'
+
+export type AutoScaleDefaultNames = 'SameSame' | 'SameOpposite' | 'SameDecimal' | 'SameBinary' | 'OppositeSame' | 'OppositeOpposite' | 'OppositeDecimal' | 'OppositeBinary' | 'BitSame' | 'BitOpposite' | 'BitDecimal' | 'BitBinary' | 'ByteSame' | 'ByteOpposite' | 'ByteDecimal' | 'ByteBinary'
 
 export interface IBaseUnitEntry {
   type: UnitType
@@ -14,27 +16,27 @@ export interface IBaseUnitEntry {
 }
 
 export interface IUnitEntry extends IBaseUnitEntry {
-  unit: DataFormatUnit
+  unit: UnitNames
   asBaseUnit: number
 }
 
-export enum AutoScalePreferTypeOptions {
+export enum AutoScalePreferType {
   SAME = 'same',
   OPPOSITE = 'opposite',
   DECIMAL = 'decimal',
   BINARY = 'binary'
 }
 
-export enum AutoScalePreferUnitOptions {
+export enum AutoScalePreferUnit {
   SAME = 'same',
   OPPOSITE = 'opposite',
   BIT = 'bit',
   BYTE = 'byte'
 }
 
-export interface IDataFormatAutoScaleOptions {
-  type: AutoScalePreferTypeOptions
-  unit: AutoScalePreferUnitOptions
+export interface IAutoScaleOptions {
+  type: AutoScalePreferType
+  unit: AutoScalePreferUnit
   /**
    *
    * @param dataFormat
@@ -42,15 +44,32 @@ export interface IDataFormatAutoScaleOptions {
    *
    * @returns false for keeping and true for filtering out the dataFormat
    */
-  filter(dataFormat: DataFormat, isScalingUp: boolean): boolean
+  filter(dataFormat: Unit, isScalingUp: boolean): boolean
 }
 
-export const DataFormatDefaultAutoScaleOptions = Object.freeze<IDataFormatAutoScaleOptions>({
-  type: AutoScalePreferTypeOptions.SAME,
-  unit: AutoScalePreferUnitOptions.SAME,
-  filter () { return false }
-})
+export type AutoScaleOptionDefaults = {
+  [key in AutoScaleDefaultNames]: IAutoScaleOptions
+}
 
-export type DataFormatsMap = {
-  [key in DataFormatUnit]: DataFormat
+function capFirstLetter (str: string):string {
+  const ret = str.toLowerCase()
+  return ret.charAt(0).toUpperCase() + ret.slice(1)
+}
+
+function mapAutoScaleOptions (): AutoScaleOptionDefaults {
+  const ret = {}
+  for (const unit in AutoScalePreferUnit) {
+    for (const type in AutoScalePreferType) {
+      const name: AutoScaleDefaultNames = (capFirstLetter(unit) + capFirstLetter(type)) as AutoScaleDefaultNames
+      ret[name] = Object.freeze<IAutoScaleOptions>({ unit: AutoScalePreferUnit[unit], type: AutoScalePreferType[type], filter () { return false } })
+    }
+  }
+  return ret as AutoScaleOptionDefaults
+}
+export const AutoScaleDefaults = Object.freeze<AutoScaleOptionDefaults>(mapAutoScaleOptions())
+
+export const AutoScaleDefault = AutoScaleDefaults.SameSame
+
+export type UnitMap = {
+  [key in UnitNames]: Unit
 }

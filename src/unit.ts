@@ -1,10 +1,10 @@
 /* eslint-disable no-use-before-define */
-import { AutoScalePreferTypeOptions, AutoScalePreferUnitOptions, DataFormatDefaultAutoScaleOptions, DataFormatUnit, DataFormatType, IBaseUnitEntry, IDataFormatAutoScaleOptions, IUnitEntry, UnitType, DataFormatsMap } from './types'
-type BaseDataFormatsMap = {
-    [key in DataFormatUnit]: IBaseUnitEntry
+import { AutoScalePreferType, AutoScalePreferUnit, AutoScaleDefault, UnitNames, UnitTypeValue, IBaseUnitEntry, IAutoScaleOptions, IUnitEntry, UnitType, UnitMap, AutoScaleOptionDefaults, AutoScaleDefaults } from './types'
+type BaseUnitMap = {
+    [key in UnitNames]: IBaseUnitEntry
 }
 
-const map: BaseDataFormatsMap = {
+const map: BaseUnitMap = {
   b: { type: 'binary', unitOrder: 0, name: 'bit' },
   B: { type: 'binary', unitOrder: 0, name: 'byte' },
   kb: { type: 'decimal', unitOrder: 1, name: 'kilobit' },
@@ -41,33 +41,38 @@ const map: BaseDataFormatsMap = {
   YiB: { type: 'binary', unitOrder: 8, name: 'yobibyte' }
 }
 
-export class DataFormat implements IUnitEntry {
-  static get map (): DataFormatsMap {
-    const nmap = {}
-    for (const dataFormat of Object.keys(map) as unknown as DataFormatUnit[]) {
-      nmap[dataFormat] = new DataFormat(dataFormat, map[dataFormat])
-    }
-    return nmap as DataFormatsMap
+export class Unit implements IUnitEntry {
+  static get map (): UnitMap {
+    return Object.freeze<UnitMap>(
+      Object.keys(map).reduce((accumulator, target: UnitNames) => {
+        accumulator[target] = new Unit(target, map[target])
+        return accumulator
+      }, {}) as UnitMap
+    )
   }
 
-  readonly unit: DataFormatUnit
+  static get AutoScaleDefaults (): AutoScaleOptionDefaults {
+    return AutoScaleDefaults
+  }
+
+  static get AutoScaleDefault (): IAutoScaleOptions {
+    return AutoScaleDefault
+  }
+
+  readonly unit: UnitNames
   readonly type: UnitType
   readonly unitOrder: number
   readonly name: string
 
-  constructor (dataFormat: DataFormatUnit, format: IBaseUnitEntry) {
+  constructor (dataFormat: UnitNames, format: IBaseUnitEntry) {
     this.unit = dataFormat
     this.type = format.type
     this.name = format.name
     this.unitOrder = format.unitOrder
   }
 
-  static unit (unit: DataFormatUnit): DataFormat {
-    return this.map[unit]
-  }
-
   get asBaseUnit (): number {
-    return Math.pow(DataFormatType[this.type], this.unitOrder)
+    return Math.pow(UnitTypeValue[this.type], this.unitOrder)
   }
 
   get baseUnit (): string {
@@ -102,22 +107,34 @@ export class DataFormat implements IUnitEntry {
     return this.isBit || this.isByte
   }
 
-  value (value: number): FormattedValue {
-    return new FormattedValue(value, this)
+  static unit (unit: UnitNames | Unit): Unit {
+    if (!(unit instanceof Unit)) unit = this.map[unit]
+    return unit
   }
 
-  compare (to: DataFormat | DataFormatUnit, descendent?: boolean): -1 | 0 | 1 {
-    if (!(to instanceof DataFormat)) to = DataFormat.unit(to)
-    return this.value(1).compare(to.value(1), descendent)
+  static value (value: number, unit: UnitNames | Unit): UnitValue {
+    return this.unit(unit).value(value)
+  }
+
+  static compare (unitA: UnitNames | Unit, unitB: UnitNames | Unit, descendent?: boolean): -1 | 0 | 1 {
+    return this.unit(unitA).compare(this.unit(unitB), descendent)
+  }
+
+  value (value: number): UnitValue {
+    return new UnitValue(value, this)
+  }
+
+  compare (to: Unit | UnitNames, descendent?: boolean): -1 | 0 | 1 {
+    return this.value(1).compare(Unit.unit(to).value(1), descendent)
   }
 }
 
-function filterDataformats (value: FormattedValue, options: IDataFormatAutoScaleOptions, isScalingUp = false): DataFormat[] {
-  const formats:DataFormat[] = []
-  for (const formatKey of Object.keys(DataFormat.map) as unknown as DataFormatUnit[]) {
-    const format = DataFormat.map[formatKey]
+function filterDataformats (value: UnitValue, options: IAutoScaleOptions, isScalingUp = false): Unit[] {
+  const formats:Unit[] = []
+  for (const formatKey of Object.keys(Unit.map) as unknown as UnitNames[]) {
+    const format = Unit.map[formatKey]
 
-    const scaleFilter = isScalingUp ? value.dataFormat.unitOrder > format.unitOrder : value.dataFormat.unitOrder < format.unitOrder
+    const scaleFilter = isScalingUp ? value.unit.unitOrder > format.unitOrder : value.unit.unitOrder < format.unitOrder
 
     if (!(
       scaleFilter ||
@@ -131,101 +148,109 @@ function filterDataformats (value: FormattedValue, options: IDataFormatAutoScale
   return formats.sort((a, b) => a.compare(b, !isScalingUp))
 }
 
-function filterOnUnit (unit: AutoScalePreferUnitOptions, value: FormattedValue, format: DataFormat) {
+function filterOnUnit (unit: AutoScalePreferUnit, value: UnitValue, format: Unit) {
   switch (unit) {
-    case AutoScalePreferUnitOptions.OPPOSITE:
-      if (value.dataFormat.isInByte === format.isInByte) return true
+    case AutoScalePreferUnit.OPPOSITE:
+      if (value.unit.isInByte === format.isInByte) return true
       break
-    case AutoScalePreferUnitOptions.BIT:
+    case AutoScalePreferUnit.BIT:
       if (format.isInByte) return true
       break
-    case AutoScalePreferUnitOptions.BYTE:
+    case AutoScalePreferUnit.BYTE:
       if (format.isInBit) return true
       break
-    case AutoScalePreferUnitOptions.SAME:
+    case AutoScalePreferUnit.SAME:
     default:
-      if (value.dataFormat.isInByte !== format.isInByte) return true
+      if (value.unit.isInByte !== format.isInByte) return true
       break
   }
   return false
 }
 
-function filterOnType (type: AutoScalePreferTypeOptions, value: FormattedValue, format: DataFormat) {
+function filterOnType (type: AutoScalePreferType, value: UnitValue, format: Unit) {
   switch (type) {
-    case AutoScalePreferTypeOptions.OPPOSITE:
-      if (value.dataFormat.type === format.type) return true
+    case AutoScalePreferType.OPPOSITE:
+      if (value.unit.type === format.type) return true
       break
-    case AutoScalePreferTypeOptions.DECIMAL:
+    case AutoScalePreferType.DECIMAL:
       if (format.isBinary) return true
       break
-    case AutoScalePreferTypeOptions.BINARY:
+    case AutoScalePreferType.BINARY:
       if (format.isDecimal) return true
       break
-    case AutoScalePreferTypeOptions.SAME:
+    case AutoScalePreferType.SAME:
     default:
-      if (value.dataFormat.type !== format.type) return true
+      if (value.unit.type !== format.type) return true
       break
   }
   return false
 }
 
-function scaleFormattedValue (value: FormattedValue, dataFormats: DataFormat[]): FormattedValue {
+function scaleFormattedValue (value: UnitValue, dataFormats: Unit[]): UnitValue {
   for (const format of dataFormats) {
     const val = value.convert(format)
-    if (val.value < DataFormatType[val.dataFormat.type] && val.value >= 1) {
+    if (val.value < UnitTypeValue[val.unit.type] && val.value >= 1) {
       return val
     }
   }
   return value
 }
 
-export class FormattedValue {
-  readonly dataFormat: DataFormat
+export class UnitValue {
+  readonly unit: Unit
   readonly value: number
 
-  constructor (value: number, dataFormat: DataFormat | DataFormatUnit) {
-    this.dataFormat = dataFormat instanceof DataFormat ? dataFormat : DataFormat.unit(dataFormat)
+  constructor (value: number, unit: Unit | UnitNames) {
+    this.unit = unit instanceof Unit ? unit : Unit.unit(unit)
     this.value = value
   }
 
-  get formatted (): string {
-    return this.value.toLocaleString() + ' ' + this.dataFormat.unit
+  static get AutoScaleDefaults (): AutoScaleOptionDefaults {
+    return Unit.AutoScaleDefaults
   }
 
-  convert (to: DataFormat): FormattedValue {
-    if (this.dataFormat.unit === to.unit) return this
-    let asBaseUnit = this.value * this.dataFormat.asBaseUnit //  the value in bit or byte * the value of his dataFormat in bit or byte
-    if (this.dataFormat.isInByte && !to.isInByte) {
+  static get AutoScaleDefault (): IAutoScaleOptions {
+    return Unit.AutoScaleDefault
+  }
+
+  formatted (): string {
+    return this.value.toLocaleString() + ' ' + this.unit.unit
+  }
+
+  convert (to: Unit): UnitValue {
+    if (this.unit.unit === to.unit) return this
+    let asBaseUnit = this.value * this.unit.asBaseUnit //  the value in bit or byte * the value of his dataFormat in bit or byte
+    if (this.unit.isInByte && !to.isInByte) {
       asBaseUnit = asBaseUnit * 8 //  the value in byte * the value of his dataFormat in byte * 8 to make this value in bit as 1 byte = 8 bit
-    } else if (!this.dataFormat.isInByte && to.isInByte) {
+    } else if (!this.unit.isInByte && to.isInByte) {
       asBaseUnit = asBaseUnit / 8 //  the value in bit * the value of his dataFormat in bit / 8 to make this value in byte as 8 bit = 1 byte
     }
-    return new FormattedValue(asBaseUnit / to.asBaseUnit, to)
+    return new UnitValue(asBaseUnit / to.asBaseUnit, to)
   }
 
-  compare (to: FormattedValue, descendent?: boolean): -1 | 0 | 1 {
-    const normTo = this.dataFormat.unit === to.dataFormat.unit ? to : to.convert(this.dataFormat)
+  compare (to: UnitValue, descendent?: boolean): -1 | 0 | 1 {
+    const normTo = this.unit.unit === to.unit.unit ? to : to.convert(this.unit)
     if (this.value < normTo.value) return (descendent ? 1 : -1)
     if (this.value === normTo.value) return 0
     if (this.value > normTo.value) return (descendent ? -1 : 1)
   }
 
-  deepEquals (to: FormattedValue): boolean {
-    return this.dataFormat.unit === to.dataFormat.unit && this.value === to.value
+  deepEquals (to: UnitValue): boolean {
+    return this.unit.unit === to.unit.unit && this.value === to.value
   }
 
-  equals (to: FormattedValue): boolean {
+  equals (to: UnitValue): boolean {
     return this.compare(to) === 0
   }
 
-  autoScale (options: Partial<IDataFormatAutoScaleOptions> = DataFormatDefaultAutoScaleOptions): FormattedValue {
-    const opt: IDataFormatAutoScaleOptions = {
-      type: options.type || DataFormatDefaultAutoScaleOptions.type,
-      unit: options.unit || DataFormatDefaultAutoScaleOptions.unit,
-      filter: options.filter || DataFormatDefaultAutoScaleOptions.filter
+  autoScale (options: Partial<IAutoScaleOptions> = UnitValue.AutoScaleDefault): UnitValue {
+    const opt: IAutoScaleOptions = {
+      type: options.type || UnitValue.AutoScaleDefault.type,
+      unit: options.unit || UnitValue.AutoScaleDefault.unit,
+      filter: options.filter || UnitValue.AutoScaleDefault.filter
     }
 
-    if (this.value >= DataFormatType[this.dataFormat.type]) { // upping
+    if (this.value >= UnitTypeValue[this.unit.type]) { // upping
       return scaleFormattedValue(this, filterDataformats(this, opt, true))
     } else if (this.value < 1) { // downing
       return scaleFormattedValue(this, filterDataformats(this, opt, false))
@@ -234,4 +259,4 @@ export class FormattedValue {
   }
 }
 
-export default DataFormat.map
+export default Unit.map

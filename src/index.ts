@@ -1,44 +1,56 @@
-import { DataFormat, FormattedValue } from './dataFormat'
-import { DataFormatsMap, DataFormatUnit, IDataFormatAutoScaleOptions } from './types'
+import { Unit, UnitValue } from './unit'
+import { AutoScaleDefaultNames, AutoScaleOptionDefaults, UnitMap, UnitNames, IAutoScaleOptions } from './types'
 
 export class ByteConverter {
-  get dataFormats (): DataFormatsMap {
-    return DataFormat.map
+  static get units (): UnitMap {
+    return Unit.map
   }
 
-  get dataFormatUnits (): DataFormatUnit[] {
-    return Object.keys(this.dataFormats) as unknown as DataFormatUnit[]
+  static get unitNames (): UnitNames[] {
+    return Object.keys(this.units) as unknown as UnitNames[]
   }
 
-  get dataFormatsList (): DataFormat[] {
-    return this.dataFormatUnits.map((value) => this.dataFormats[value])
+  static get unitsList (): Unit[] {
+    return this.unitNames.map((value) => this.units[value])
   }
 
-  unit (unit: DataFormatUnit): DataFormat {
-    return this.dataFormats[unit]
+  static get autoScaleDefaults (): AutoScaleOptionDefaults {
+    return Unit.AutoScaleDefaults
   }
 
-  value (value: number, unit: DataFormat | DataFormatUnit): FormattedValue {
-    if (!(unit instanceof DataFormat)) unit = this.unit(unit)
+  static get autoScaleDefaultNames (): AutoScaleDefaultNames[] {
+    return Object.keys(this.autoScaleDefaults) as unknown as AutoScaleDefaultNames[]
+  }
+
+  static get autoScaleDefaultsList (): IAutoScaleOptions[] {
+    return this.autoScaleDefaultNames.map((value) => this.autoScaleDefaults[value])
+  }
+
+  static unit (unit: UnitNames): Unit {
+    return this.units[unit]
+  }
+
+  static value (value: number, unit: Unit | UnitNames): UnitValue {
+    if (!(unit instanceof Unit)) unit = this.unit(unit)
     return unit.value(value)
   }
 
-  convert (from: FormattedValue, to: DataFormat | DataFormatUnit): FormattedValue {
-    if (!(to instanceof DataFormat)) to = this.unit(to)
+  static convert (from: UnitValue, to: Unit | UnitNames): UnitValue {
+    if (!(to instanceof Unit)) to = this.unit(to)
     return from.convert(to)
   }
 
-  compareFormat (from: DataFormat | DataFormatUnit, to: DataFormat | DataFormatUnit, descendent?: boolean): -1 | 0 | 1 {
-    if (!(from instanceof DataFormat)) from = this.unit(from)
-    if (!(to instanceof DataFormat)) to = this.unit(to)
+  static compareFormat (from: Unit | UnitNames, to: Unit | UnitNames, descendent?: boolean): -1 | 0 | 1 {
+    if (!(from instanceof Unit)) from = this.unit(from)
+    if (!(to instanceof Unit)) to = this.unit(to)
     return from.compare(to, descendent)
   }
 
-  compareValue (from: FormattedValue, to: FormattedValue, descendent?: boolean): -1 | 0 | 1 {
+  static compareValue (from: UnitValue, to: UnitValue, descendent?: boolean): -1 | 0 | 1 {
     return from.compare(to, descendent)
   }
 
-  autoScale (from: FormattedValue, options?: IDataFormatAutoScaleOptions): FormattedValue {
+  static autoScale (from: UnitValue, options?: IAutoScaleOptions): UnitValue {
     return from.autoScale(options)
   }
 }
