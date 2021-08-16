@@ -4,14 +4,14 @@ export declare const DataFormatType: {
     decimal: number;
     binary: number;
 };
-export declare type DataFormatKey = 'b' | 'B' | 'kb' | 'kB' | 'Kib' | 'KiB' | 'Mb' | 'MB' | 'Mib' | 'MiB' | 'Gb' | 'GB' | 'Gib' | 'GiB' | 'Tb' | 'TB' | 'Tib' | 'TiB' | 'Pb' | 'PB' | 'Pib' | 'PiB' | 'Eb' | 'EB' | 'Eib' | 'EiB' | 'Zb' | 'ZB' | 'Zib' | 'ZiB' | 'Yb' | 'YB' | 'Yib' | 'YiB';
+export declare type DataFormatUnit = 'b' | 'B' | 'kb' | 'kB' | 'Kib' | 'KiB' | 'Mb' | 'MB' | 'Mib' | 'MiB' | 'Gb' | 'GB' | 'Gib' | 'GiB' | 'Tb' | 'TB' | 'Tib' | 'TiB' | 'Pb' | 'PB' | 'Pib' | 'PiB' | 'Eb' | 'EB' | 'Eib' | 'EiB' | 'Zb' | 'ZB' | 'Zib' | 'ZiB' | 'Yb' | 'YB' | 'Yib' | 'YiB';
 export interface IBaseUnitEntry {
     type: UnitType;
     unitOrder: number;
     name: string;
 }
 export interface IUnitEntry extends IBaseUnitEntry {
-    unit: DataFormatKey;
+    unit: DataFormatUnit;
     asBaseUnit: number;
 }
 export declare enum AutoScalePreferTypeOptions {
@@ -39,3 +39,6 @@ export interface IDataFormatAutoScaleOptions {
     filter(dataFormat: DataFormat, isScalingUp: boolean): boolean;
 }
 export declare const DataFormatDefaultAutoScaleOptions: Readonly<IDataFormatAutoScaleOptions>;
+export declare type DataFormatsMap = {
+    [key in DataFormatUnit]: DataFormat;
+};

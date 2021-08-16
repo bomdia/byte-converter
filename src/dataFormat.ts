@@ -1,8 +1,7 @@
 /* eslint-disable no-use-before-define */
-import { AutoScalePreferTypeOptions, AutoScalePreferUnitOptions, DataFormatDefaultAutoScaleOptions, DataFormatKey, DataFormatType, IBaseUnitEntry, IDataFormatAutoScaleOptions, IUnitEntry, UnitType } from './types'
-
+import { AutoScalePreferTypeOptions, AutoScalePreferUnitOptions, DataFormatDefaultAutoScaleOptions, DataFormatUnit, DataFormatType, IBaseUnitEntry, IDataFormatAutoScaleOptions, IUnitEntry, UnitType, DataFormatsMap } from './types'
 type BaseDataFormatsMap = {
-    [key in DataFormatKey]: IBaseUnitEntry
+    [key in DataFormatUnit]: IBaseUnitEntry
 }
 
 const map: BaseDataFormatsMap = {
@@ -43,16 +42,28 @@ const map: BaseDataFormatsMap = {
 }
 
 export class DataFormat implements IUnitEntry {
-  readonly unit: DataFormatKey
+  static get map (): DataFormatsMap {
+    const nmap = {}
+    for (const dataFormat of Object.keys(map) as unknown as DataFormatUnit[]) {
+      nmap[dataFormat] = new DataFormat(dataFormat, map[dataFormat])
+    }
+    return nmap as DataFormatsMap
+  }
+
+  readonly unit: DataFormatUnit
   readonly type: UnitType
   readonly unitOrder: number
   readonly name: string
 
-  constructor (dataFormat: DataFormatKey, format: IBaseUnitEntry) {
+  constructor (dataFormat: DataFormatUnit, format: IBaseUnitEntry) {
     this.unit = dataFormat
     this.type = format.type
     this.name = format.name
     this.unitOrder = format.unitOrder
+  }
+
+  static unit (unit: DataFormatUnit): DataFormat {
+    return this.map[unit]
   }
 
   get asBaseUnit (): number {
@@ -95,25 +106,16 @@ export class DataFormat implements IUnitEntry {
     return new FormattedValue(value, this)
   }
 
-  compare (to: DataFormat, descendent?: boolean): -1 | 0 | 1 {
-    if (!(to instanceof DataFormat)) throw new TypeError('"to" paramater isn\'t a valid DataFormat Object')
+  compare (to: DataFormat | DataFormatUnit, descendent?: boolean): -1 | 0 | 1 {
+    if (!(to instanceof DataFormat)) to = DataFormat.unit(to)
     return this.value(1).compare(to.value(1), descendent)
   }
 }
 
-function calculateMap (): DataFormatsMap {
-  const nmap = {}
-  for (const dataFormat of Object.keys(map) as unknown as DataFormatKey[]) {
-    nmap[dataFormat] = new DataFormat(dataFormat, map[dataFormat])
-  }
-  return nmap as DataFormatsMap
-}
-const dFormatMap = calculateMap()
-
 function filterDataformats (value: FormattedValue, options: IDataFormatAutoScaleOptions, isScalingUp = false): DataFormat[] {
   const formats:DataFormat[] = []
-  for (const formatKey of Object.keys(dFormatMap) as unknown as DataFormatKey[]) {
-    const format = dFormatMap[formatKey]
+  for (const formatKey of Object.keys(DataFormat.map) as unknown as DataFormatUnit[]) {
+    const format = DataFormat.map[formatKey]
 
     const scaleFilter = isScalingUp ? value.dataFormat.unitOrder > format.unitOrder : value.dataFormat.unitOrder < format.unitOrder
 
@@ -181,8 +183,8 @@ export class FormattedValue {
   readonly dataFormat: DataFormat
   readonly value: number
 
-  constructor (value: number, dataFormat: DataFormat) {
-    this.dataFormat = dataFormat
+  constructor (value: number, dataFormat: DataFormat | DataFormatUnit) {
+    this.dataFormat = dataFormat instanceof DataFormat ? dataFormat : DataFormat.unit(dataFormat)
     this.value = value
   }
 
@@ -208,6 +210,14 @@ export class FormattedValue {
     if (this.value > normTo.value) return (descendent ? -1 : 1)
   }
 
+  deepEquals (to: FormattedValue): boolean {
+    return this.dataFormat.unit === to.dataFormat.unit && this.value === to.value
+  }
+
+  equals (to: FormattedValue): boolean {
+    return this.compare(to) === 0
+  }
+
   autoScale (options: Partial<IDataFormatAutoScaleOptions> = DataFormatDefaultAutoScaleOptions): FormattedValue {
     const opt: IDataFormatAutoScaleOptions = {
       type: options.type || DataFormatDefaultAutoScaleOptions.type,
@@ -223,8 +233,5 @@ export class FormattedValue {
     return this
   }
 }
-export type DataFormatsMap = {
-  [key in DataFormatKey]: DataFormat
-}
 
-export default dFormatMap
+export default DataFormat.map

@@ -1,10 +1,12 @@
-import { DataFormatKey, IBaseUnitEntry, IDataFormatAutoScaleOptions, IUnitEntry, UnitType } from './types';
+import { DataFormatUnit, IBaseUnitEntry, IDataFormatAutoScaleOptions, IUnitEntry, UnitType, DataFormatsMap } from './types';
 export declare class DataFormat implements IUnitEntry {
-    readonly unit: DataFormatKey;
+    static get map(): DataFormatsMap;
+    readonly unit: DataFormatUnit;
     readonly type: UnitType;
     readonly unitOrder: number;
     readonly name: string;
-    constructor(dataFormat: DataFormatKey, format: IBaseUnitEntry);
+    constructor(dataFormat: DataFormatUnit, format: IBaseUnitEntry);
+    static unit(unit: DataFormatUnit): DataFormat;
     get asBaseUnit(): number;
     get baseUnit(): string;
     get isInByte(): boolean;
@@ -15,19 +17,18 @@ export declare class DataFormat implements IUnitEntry {
     get isByte(): boolean;
     get isBaseUnit(): boolean;
     value(value: number): FormattedValue;
-    compare(to: DataFormat, descendent?: boolean): -1 | 0 | 1;
+    compare(to: DataFormat | DataFormatUnit, descendent?: boolean): -1 | 0 | 1;
 }
-declare const dFormatMap: DataFormatsMap;
 export declare class FormattedValue {
     readonly dataFormat: DataFormat;
     readonly value: number;
-    constructor(value: number, dataFormat: DataFormat);
+    constructor(value: number, dataFormat: DataFormat | DataFormatUnit);
     get formatted(): string;
     convert(to: DataFormat): FormattedValue;
     compare(to: FormattedValue, descendent?: boolean): -1 | 0 | 1;
+    deepEquals(to: FormattedValue): boolean;
+    equals(to: FormattedValue): boolean;
     autoScale(options?: Partial<IDataFormatAutoScaleOptions>): FormattedValue;
 }
-export declare type DataFormatsMap = {
-    [key in DataFormatKey]: DataFormat;
-};
-export default dFormatMap;
+declare const _default: DataFormatsMap;
+export default _default;

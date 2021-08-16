@@ -7,16 +7,13 @@
   "unpkg": "dist/byte-converter.min.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "yarn pre-build & yarn no-prebuild-build:umd & yarn no-prebuild-build:es & yarn no-prebuild-build:unpkg",
-    "build:umd": "yarn pre-build & rollup --config build/rollup.config.js --format umd --file dist/byte-converter.umd.js",
-    "build:es": "yarn pre-build & rollup --config build/rollup.config.js --format es --file dist/byte-converter.esm.js",
-    "build:unpkg": "yarn pre-build & rollup --config build/rollup.config.js --format iife --file dist/byte-converter.min.js",
-    "no-prebuild-build:umd": "rollup --config build/rollup.config.js --format umd --file dist/byte-converter.umd.js",
-    "no-prebuild-build:es": "rollup --config build/rollup.config.js --format es --file dist/byte-converter.esm.js",
-    "no-prebuild-build:unpkg": "rollup --config build/rollup.config.js --format iife --file dist/byte-converter.min.js",
-    "lint:fix": "eslint --ext .js,.vue -f ./node_modules/eslint-friendly-formatter --fix src build test.html",
-    "lint": "eslint --ext .js,.vue -f ./node_modules/eslint-friendly-formatter src build test.html",
-    "pre-build": "yarn lint:fix"
+    "build": "yarn build:umd & yarn build:es & yarn build:unpkg",
+    "build:umd": "rollup --config build/rollup.config.js --format umd --file dist/byte-converter.umd.js",
+    "build:es": "rollup --config build/rollup.config.js --format es --file dist/byte-converter.esm.js",
+    "build:unpkg": "rollup --config build/rollup.config.js --format iife --file dist/byte-converter.min.js",
+    "lint:fix": "eslint --ext .ts,.js,.vue -f ./node_modules/eslint-friendly-formatter --fix src build test.html",
+    "lint": "eslint --ext .ts,.js,.vue -f ./node_modules/eslint-friendly-formatter src build test.html",
+    "test": "mocha --reporter spec --require ts-node/register test/**/*.ts"
   },
   "keywords": [
     "byte",
@@ -34,10 +31,12 @@
     "mebibyte"
   ],
   "devDependencies": {
-    "@rollup/plugin-buble": "^0.21.3",
-    "@rollup/plugin-commonjs": "^20.0.0",
-    "@rollup/plugin-node-resolve": "13.0.4",
     "@rollup/plugin-typescript": "^8.2.5",
+    "@types/chai": "^4.2.21",
+    "@types/mocha": "^9.0.0",
+    "@typescript-eslint/eslint-plugin": "^4.29.1",
+    "@typescript-eslint/parser": "^4.29.1",
+    "chai": "^4.3.4",
     "eslint": "^7.32.0",
     "eslint-config-standard": "^16.0.3",
     "eslint-friendly-formatter": "^4.0.1",
@@ -46,10 +45,11 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.1.0",
     "eslint-plugin-standard": "^5.0.0",
-    "@typescript-eslint/parser": "^4.29.1",
-    "@typescript-eslint/eslint-plugin": "^4.29.1",
-    "typescript": "~4.3.5",
-    "rollup": "^2.56.2"
+    "mocha": "^9.0.3",
+    "rollup": "^2.56.2",
+    "ts-node": "^10.2.0",
+    "tslib": "^2.3.1",
+    "typescript": "^4.3.5"
   },
   "author": "bomdia",
   "bugs": {

@@ -5,7 +5,7 @@ export const DataFormatType = {
   decimal: 1000,
   binary: 1024
 }
-export type DataFormatKey = 'b' | 'B' | 'kb' | 'kB' | 'Kib' | 'KiB' | 'Mb' | 'MB' | 'Mib' | 'MiB' | 'Gb' | 'GB' | 'Gib' | 'GiB' | 'Tb' | 'TB' | 'Tib' | 'TiB' | 'Pb' | 'PB' | 'Pib' | 'PiB' | 'Eb' | 'EB' | 'Eib' | 'EiB' | 'Zb' | 'ZB' | 'Zib' | 'ZiB' | 'Yb' | 'YB' | 'Yib' | 'YiB'
+export type DataFormatUnit = 'b' | 'B' | 'kb' | 'kB' | 'Kib' | 'KiB' | 'Mb' | 'MB' | 'Mib' | 'MiB' | 'Gb' | 'GB' | 'Gib' | 'GiB' | 'Tb' | 'TB' | 'Tib' | 'TiB' | 'Pb' | 'PB' | 'Pib' | 'PiB' | 'Eb' | 'EB' | 'Eib' | 'EiB' | 'Zb' | 'ZB' | 'Zib' | 'ZiB' | 'Yb' | 'YB' | 'Yib' | 'YiB'
 
 export interface IBaseUnitEntry {
   type: UnitType
@@ -14,7 +14,7 @@ export interface IBaseUnitEntry {
 }
 
 export interface IUnitEntry extends IBaseUnitEntry {
-  unit: DataFormatKey
+  unit: DataFormatUnit
   asBaseUnit: number
 }
 
@@ -50,3 +50,7 @@ export const DataFormatDefaultAutoScaleOptions = Object.freeze<IDataFormatAutoSc
   unit: AutoScalePreferUnitOptions.SAME,
   filter () { return false }
 })
+
+export type DataFormatsMap = {
+  [key in DataFormatUnit]: DataFormat
+}

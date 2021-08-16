@@ -1,12 +1,13 @@
-import { DataFormatsMap, DataFormat, FormattedValue } from './dataFormat';
-import { DataFormatKey, IDataFormatAutoScaleOptions } from './types';
+import { DataFormat, FormattedValue } from './dataFormat';
+import { DataFormatsMap, DataFormatUnit, IDataFormatAutoScaleOptions } from './types';
 export declare class ByteConverter {
-    dataFormats: DataFormatsMap;
-    constructor();
-    get dataFormatsUnit(): DataFormatKey[];
+    get dataFormats(): DataFormatsMap;
+    get dataFormatUnits(): DataFormatUnit[];
     get dataFormatsList(): DataFormat[];
-    convert(from: FormattedValue, to: DataFormat): FormattedValue;
-    compareFormat(from: DataFormat, to: DataFormat, descendent?: boolean): -1 | 0 | 1;
+    unit(unit: DataFormatUnit): DataFormat;
+    value(value: number, unit: DataFormat | DataFormatUnit): FormattedValue;
+    convert(from: FormattedValue, to: DataFormat | DataFormatUnit): FormattedValue;
+    compareFormat(from: DataFormat | DataFormatUnit, to: DataFormat | DataFormatUnit, descendent?: boolean): -1 | 0 | 1;
     compareValue(from: FormattedValue, to: FormattedValue, descendent?: boolean): -1 | 0 | 1;
     autoScale(from: FormattedValue, options?: IDataFormatAutoScaleOptions): FormattedValue;
 }

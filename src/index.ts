@@ -1,25 +1,36 @@
-import dataFormatsMap, { DataFormatsMap, DataFormat, FormattedValue } from './dataFormat'
-import { DataFormatKey, IDataFormatAutoScaleOptions } from './types'
+import { DataFormat, FormattedValue } from './dataFormat'
+import { DataFormatsMap, DataFormatUnit, IDataFormatAutoScaleOptions } from './types'
 
 export class ByteConverter {
-  dataFormats: DataFormatsMap
-  constructor () {
-    this.dataFormats = dataFormatsMap
+  get dataFormats (): DataFormatsMap {
+    return DataFormat.map
   }
 
-  get dataFormatsUnit (): DataFormatKey[] {
-    return Object.keys(this.dataFormats) as unknown as DataFormatKey[]
+  get dataFormatUnits (): DataFormatUnit[] {
+    return Object.keys(this.dataFormats) as unknown as DataFormatUnit[]
   }
 
   get dataFormatsList (): DataFormat[] {
-    return this.dataFormatsUnit.map((value) => this.dataFormats[value])
+    return this.dataFormatUnits.map((value) => this.dataFormats[value])
   }
 
-  convert (from: FormattedValue, to: DataFormat): FormattedValue {
+  unit (unit: DataFormatUnit): DataFormat {
+    return this.dataFormats[unit]
+  }
+
+  value (value: number, unit: DataFormat | DataFormatUnit): FormattedValue {
+    if (!(unit instanceof DataFormat)) unit = this.unit(unit)
+    return unit.value(value)
+  }
+
+  convert (from: FormattedValue, to: DataFormat | DataFormatUnit): FormattedValue {
+    if (!(to instanceof DataFormat)) to = this.unit(to)
     return from.convert(to)
   }
 
-  compareFormat (from: DataFormat, to: DataFormat, descendent?: boolean): -1 | 0 | 1 {
+  compareFormat (from: DataFormat | DataFormatUnit, to: DataFormat | DataFormatUnit, descendent?: boolean): -1 | 0 | 1 {
+    if (!(from instanceof DataFormat)) from = this.unit(from)
+    if (!(to instanceof DataFormat)) to = this.unit(to)
     return from.compare(to, descendent)
   }
 

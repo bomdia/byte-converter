@@ -66,6 +66,13 @@
         YiB: { type: 'binary', unitOrder: 8, name: 'yobibyte' }
     };
     class DataFormat {
+        static get map() {
+            const nmap = {};
+            for (const dataFormat of Object.keys(map)) {
+                nmap[dataFormat] = new DataFormat(dataFormat, map[dataFormat]);
+            }
+            return nmap;
+        }
         unit;
         type;
         unitOrder;
@@ -75,6 +82,9 @@
             this.type = format.type;
             this.name = format.name;
             this.unitOrder = format.unitOrder;
+        }
+        static unit(unit) {
+            return this.map[unit];
         }
         get asBaseUnit() {
             return Math.pow(DataFormatType[this.type], this.unitOrder);
@@ -108,22 +118,14 @@
         }
         compare(to, descendent) {
             if (!(to instanceof DataFormat))
-                throw new TypeError('"to" paramater isn\'t a valid DataFormat Object');
+                to = DataFormat.unit(to);
             return this.value(1).compare(to.value(1), descendent);
         }
     }
-    function calculateMap() {
-        const nmap = {};
-        for (const dataFormat of Object.keys(map)) {
-            nmap[dataFormat] = new DataFormat(dataFormat, map[dataFormat]);
-        }
-        return nmap;
-    }
-    const dFormatMap = calculateMap();
     function filterDataformats(value, options, isScalingUp = false) {
         const formats = [];
-        for (const formatKey of Object.keys(dFormatMap)) {
-            const format = dFormatMap[formatKey];
+        for (const formatKey of Object.keys(DataFormat.map)) {
+            const format = DataFormat.map[formatKey];
             const scaleFilter = isScalingUp ? value.dataFormat.unitOrder > format.unitOrder : value.dataFormat.unitOrder < format.unitOrder;
             if (!(scaleFilter ||
                 filterOnType(options.type, value, format) ||
@@ -191,7 +193,7 @@
         dataFormat;
         value;
         constructor(value, dataFormat) {
-            this.dataFormat = dataFormat;
+            this.dataFormat = dataFormat instanceof DataFormat ? dataFormat : DataFormat.unit(dataFormat);
             this.value = value;
         }
         get formatted() {
@@ -218,6 +220,12 @@
             if (this.value > normTo.value)
                 return (descendent ? -1 : 1);
         }
+        deepEquals(to) {
+            return this.dataFormat.unit === to.dataFormat.unit && this.value === to.value;
+        }
+        equals(to) {
+            return this.compare(to) === 0;
+        }
         autoScale(options = DataFormatDefaultAutoScaleOptions) {
             const opt = {
                 type: options.type || DataFormatDefaultAutoScaleOptions.type,
@@ -233,22 +241,36 @@
             return this;
         }
     }
+    DataFormat.map;
 
     class ByteConverter {
-        dataFormats;
-        constructor() {
-            this.dataFormats = dFormatMap;
+        get dataFormats() {
+            return DataFormat.map;
         }
-        get dataFormatsUnit() {
+        get dataFormatUnits() {
             return Object.keys(this.dataFormats);
         }
         get dataFormatsList() {
-            return this.dataFormatsUnit.map((value) => this.dataFormats[value]);
+            return this.dataFormatUnits.map((value) => this.dataFormats[value]);
+        }
+        unit(unit) {
+            return this.dataFormats[unit];
+        }
+        value(value, unit) {
+            if (!(unit instanceof DataFormat))
+                unit = this.unit(unit);
+            return unit.value(value);
         }
         convert(from, to) {
+            if (!(to instanceof DataFormat))
+                to = this.unit(to);
             return from.convert(to);
         }
         compareFormat(from, to, descendent) {
+            if (!(from instanceof DataFormat))
+                from = this.unit(from);
+            if (!(to instanceof DataFormat))
+                to = this.unit(to);
             return from.compare(to, descendent);
         }
         compareValue(from, to, descendent) {
