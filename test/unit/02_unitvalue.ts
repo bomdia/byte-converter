@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as mocha from 'mocha'
 import * as chai from 'chai'
-import { UnitValue } from '../../src/unit'
+import { UnitValue } from '../../src/index'
 import { GroupedIT, ITElement, MultiGroup, SingleGroup } from '../helper'
 import { IAutoScaleOptions, AutoScaleDefaults } from '../../src/types'
 

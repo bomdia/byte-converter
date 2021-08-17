@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as mocha from 'mocha'
 import * as chai from 'chai'
-import { Unit } from '../../src/unit'
+import { Unit } from '../../src/index'
 import { GroupedIT, ITElement, MultiGroup, SingleGroup } from '../helper'
 
 const expect = chai.expect

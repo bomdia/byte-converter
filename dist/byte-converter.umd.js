@@ -31,7 +31,11 @@
         for (const unit in AutoScalePreferUnit) {
             for (const type in AutoScalePreferType) {
                 const name = (capFirstLetter(unit) + capFirstLetter(type));
-                ret[name] = Object.freeze({ unit: AutoScalePreferUnit[unit], type: AutoScalePreferType[type], filter() { return false; } });
+                ret[name] = Object.freeze({
+                    unit: AutoScalePreferUnit[unit],
+                    type: AutoScalePreferType[type],
+                    filter() { return false; }
+                });
             }
         }
         return ret;
@@ -77,6 +81,12 @@
         YiB: { type: 'binary', unitOrder: 8, name: 'yobibyte' }
     };
     class Unit {
+        constructor(dataFormat, format) {
+            this.unit = dataFormat;
+            this.type = format.type;
+            this.name = format.name;
+            this.unitOrder = format.unitOrder;
+        }
         static get map() {
             return Object.freeze(Object.keys(map).reduce((accumulator, target) => {
                 accumulator[target] = new Unit(target, map[target]);
@@ -88,16 +98,6 @@
         }
         static get AutoScaleDefault() {
             return AutoScaleDefault;
-        }
-        unit;
-        type;
-        unitOrder;
-        name;
-        constructor(dataFormat, format) {
-            this.unit = dataFormat;
-            this.type = format.type;
-            this.name = format.name;
-            this.unitOrder = format.unitOrder;
         }
         get asBaseUnit() {
             return Math.pow(UnitTypeValue[this.type], this.unitOrder);
@@ -212,8 +212,6 @@
         return value;
     }
     class UnitValue {
-        unit;
-        value;
         constructor(value, unit) {
             this.unit = unit instanceof Unit ? unit : Unit.unit(unit);
             this.value = value;
@@ -243,10 +241,12 @@
             const normTo = this.unit.unit === to.unit.unit ? to : to.convert(this.unit);
             if (this.value < normTo.value)
                 return (descendent ? 1 : -1);
-            if (this.value === normTo.value)
+            else if (this.value === normTo.value)
                 return 0;
-            if (this.value > normTo.value)
+            else if (this.value > normTo.value)
                 return (descendent ? -1 : 1);
+            else
+                return 0;
         }
         deepEquals(to) {
             return this.unit.unit === to.unit.unit && this.value === to.value;

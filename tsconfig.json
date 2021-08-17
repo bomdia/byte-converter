@@ -7,6 +7,19 @@
         "outDir": "dist",
         "declaration": true,
         "declarationDir": ".",
-        "target": "esnext"
+        "target": "es2019",
+        "strict": true,
+        "importHelpers": true,
+        "experimentalDecorators": true,
+        "skipLibCheck": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "baseUrl": ".",
+        "lib": [
+            "es2019",
+            "dom",
+            "dom.iterable",
+            "scripthost"
+        ]
     }
 }

@@ -57,11 +57,15 @@ function capFirstLetter (str: string):string {
 }
 
 function mapAutoScaleOptions (): AutoScaleOptionDefaults {
-  const ret = {}
+  const ret:{[key:string]:IAutoScaleOptions} = {}
   for (const unit in AutoScalePreferUnit) {
     for (const type in AutoScalePreferType) {
       const name: AutoScaleDefaultNames = (capFirstLetter(unit) + capFirstLetter(type)) as AutoScaleDefaultNames
-      ret[name] = Object.freeze<IAutoScaleOptions>({ unit: AutoScalePreferUnit[unit], type: AutoScalePreferType[type], filter () { return false } })
+      ret[name] = Object.freeze<IAutoScaleOptions>({
+        unit: (AutoScalePreferUnit as { [key: string]: AutoScalePreferUnit })[unit],
+        type: (AutoScalePreferType as { [key: string]: AutoScalePreferType })[type],
+        filter () { return false }
+      })
     }
   }
   return ret as AutoScaleOptionDefaults

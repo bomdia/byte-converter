@@ -44,10 +44,10 @@ const map: BaseUnitMap = {
 export class Unit implements IUnitEntry {
   static get map (): UnitMap {
     return Object.freeze<UnitMap>(
-      Object.keys(map).reduce((accumulator, target: UnitNames) => {
-        accumulator[target] = new Unit(target, map[target])
+      Object.keys(map).reduce((accumulator, target) => {
+        accumulator[target] = new Unit(target as UnitNames, map[target as UnitNames])
         return accumulator
-      }, {}) as UnitMap
+      }, {} as {[key:string]:Unit}) as unknown as UnitMap
     )
   }
 
@@ -231,8 +231,9 @@ export class UnitValue {
   compare (to: UnitValue, descendent?: boolean): -1 | 0 | 1 {
     const normTo = this.unit.unit === to.unit.unit ? to : to.convert(this.unit)
     if (this.value < normTo.value) return (descendent ? 1 : -1)
-    if (this.value === normTo.value) return 0
-    if (this.value > normTo.value) return (descendent ? -1 : 1)
+    else if (this.value === normTo.value) return 0
+    else if (this.value > normTo.value) return (descendent ? -1 : 1)
+    else return 0
   }
 
   deepEquals (to: UnitValue): boolean {
