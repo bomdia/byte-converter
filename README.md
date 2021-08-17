@@ -5,6 +5,8 @@ Use the autoScale function for scale a given value and dataFormat to te best dat
 
 CHANGES:
 
+2.0.1 => 2.0.5 (Added Mathematical Action on UnitValue )
+
 2.0.1 => (Rewrited the byteConverter implementation in typescript and heavily simplified the algorithm)
 
 1.7.10 => 1.7.11 (autoScale now choose between 1000 and 1024 if is decimal type or binary type, the autoscaling is now better)

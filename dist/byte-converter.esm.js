@@ -205,6 +205,15 @@ function scaleFormattedValue(value, dataFormats) {
     }
     return value;
 }
+function optionOperation(ret, options) {
+    if (options instanceof Unit) {
+        return ret.convert(options);
+    }
+    else if (options) {
+        return ret.autoScale(options);
+    }
+    return ret;
+}
 class UnitValue {
     constructor(value, unit) {
         this.unit = unit instanceof Unit ? unit : Unit.unit(unit);
@@ -220,16 +229,18 @@ class UnitValue {
         return this.value.toLocaleString() + ' ' + this.unit.unit;
     }
     convert(to) {
+        if (!(to instanceof Unit))
+            to = Unit.unit(to);
         if (this.unit.unit === to.unit)
             return this;
-        let asBaseUnit = this.value * this.unit.asBaseUnit; //  the value in bit or byte * the value of his dataFormat in bit or byte
+        let inBaseUnit = this.value * this.unit.asBaseUnit; //  the value in bit or byte * the value of his dataFormat in bit or byte
         if (this.unit.isInByte && !to.isInByte) {
-            asBaseUnit = asBaseUnit * 8; //  the value in byte * the value of his dataFormat in byte * 8 to make this value in bit as 1 byte = 8 bit
+            inBaseUnit = inBaseUnit * 8; //  the value in byte * the value of his dataFormat in byte * 8 to make this value in bit as 1 byte = 8 bit
         }
         else if (!this.unit.isInByte && to.isInByte) {
-            asBaseUnit = asBaseUnit / 8; //  the value in bit * the value of his dataFormat in bit / 8 to make this value in byte as 8 bit = 1 byte
+            inBaseUnit = inBaseUnit / 8; //  the value in bit * the value of his dataFormat in bit / 8 to make this value in byte as 8 bit = 1 byte
         }
-        return new UnitValue(asBaseUnit / to.asBaseUnit, to);
+        return new UnitValue(inBaseUnit / to.asBaseUnit, to);
     }
     compare(to, descendent) {
         const normTo = this.unit.unit === to.unit.unit ? to : to.convert(this.unit);
@@ -261,6 +272,22 @@ class UnitValue {
             return scaleFormattedValue(this, filterDataformats(this, opt, false));
         }
         return this;
+    }
+    plus(value, options) {
+        const curUnit = this.unit.isInBit ? 'b' : 'B';
+        return optionOperation(new UnitValue(this.convert(curUnit).value + value.convert(curUnit).value, curUnit), options || this.unit);
+    }
+    minus(value, options) {
+        const curUnit = this.unit.isInBit ? 'b' : 'B';
+        return optionOperation(new UnitValue(this.convert(curUnit).value - value.convert(curUnit).value, curUnit), options || this.unit);
+    }
+    multiply(value, options) {
+        const curUnit = this.unit.isInBit ? 'b' : 'B';
+        return optionOperation(new UnitValue(this.convert(curUnit).value * value.convert(curUnit).value, curUnit), options || this.unit);
+    }
+    divide(value, options) {
+        const curUnit = this.unit.isInBit ? 'b' : 'B';
+        return optionOperation(new UnitValue(this.convert(curUnit).value / value.convert(curUnit).value, curUnit), options || this.unit);
     }
 }
 Unit.map;
@@ -309,6 +336,18 @@ class ByteConverter {
     }
     static autoScale(from, options) {
         return from.autoScale(options);
+    }
+    static plus(a, b, options) {
+        return a.plus(b, options);
+    }
+    static minus(a, b, options) {
+        return a.minus(b, options);
+    }
+    static multiply(a, b, options) {
+        return a.multiply(b, options);
+    }
+    static divide(a, b, options) {
+        return a.divide(b, options);
     }
 }
 

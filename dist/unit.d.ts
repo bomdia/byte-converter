@@ -30,11 +30,15 @@ export declare class UnitValue {
     static get AutoScaleDefaults(): AutoScaleOptionDefaults;
     static get AutoScaleDefault(): IAutoScaleOptions;
     formatted(): string;
-    convert(to: Unit): UnitValue;
+    convert(to: Unit | UnitNames): UnitValue;
     compare(to: UnitValue, descendent?: boolean): -1 | 0 | 1;
     deepEquals(to: UnitValue): boolean;
     equals(to: UnitValue): boolean;
     autoScale(options?: Partial<IAutoScaleOptions>): UnitValue;
+    plus(value: UnitValue, options?: Unit | Partial<IAutoScaleOptions>): UnitValue;
+    minus(value: UnitValue, options?: Unit | Partial<IAutoScaleOptions>): UnitValue;
+    multiply(value: UnitValue, options?: Unit | Partial<IAutoScaleOptions>): UnitValue;
+    divide(value: UnitValue, options?: Unit | Partial<IAutoScaleOptions>): UnitValue;
 }
 declare const _default: UnitMap;
 export default _default;

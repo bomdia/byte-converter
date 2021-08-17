@@ -14,7 +14,7 @@
         const from = window.converter.value(value, window.selFrom.value)
 
         if (window.selTo.value !== 'auto') {
-          window.result.value = window.converter.convert(from, window.converter.dataFormats[window.selTo.value]).formatted
+          window.result.value = window.converter.convert(from, window.converter.units[window.selTo.value]).formatted()
         } else {
           const opt = { type: window.autoBase(), unit: window.autoUnit() }
           const val = window.converter.autoScale(from, opt)

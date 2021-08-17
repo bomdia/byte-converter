@@ -1,6 +1,6 @@
 {
   "name": "@wtfcode/byte-converter",
-  "version": "2.0.2",
+  "version": "2.0.5",
   "description": "Convert any value from a bit/byte unit measure to an another bit/byte measure, this package is compliant to IEC standard. EX: you can convert from KiB to kB or to Kib, Use the autoScale function for scale a given value and dataFormat to te best dataFormat for representing the value.",
   "main": "dist/byte-converter.umd.js",
   "module": "dist/byte-converter.esm.js",
@@ -16,6 +16,12 @@
     "test": "mocha --reporter spec --require ts-node/register test/**/*.ts"
   },
   "keywords": [
+    "plus",
+    "minus",
+    "divide",
+    "multiply",
+    "byte math",
+    "bit math",
     "byte",
     "bit",
     "conversion",

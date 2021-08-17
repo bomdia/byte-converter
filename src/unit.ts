@@ -196,6 +196,15 @@ function scaleFormattedValue (value: UnitValue, dataFormats: Unit[]): UnitValue 
   return value
 }
 
+function optionOperation (ret: UnitValue, options?: Unit | Partial<IAutoScaleOptions>): UnitValue {
+  if (options instanceof Unit) {
+    return ret.convert(options)
+  } else if (options) {
+    return ret.autoScale(options)
+  }
+  return ret
+}
+
 export class UnitValue {
   readonly unit: Unit
   readonly value: number
@@ -217,15 +226,16 @@ export class UnitValue {
     return this.value.toLocaleString() + ' ' + this.unit.unit
   }
 
-  convert (to: Unit): UnitValue {
+  convert (to: Unit | UnitNames): UnitValue {
+    if (!(to instanceof Unit)) to = Unit.unit(to)
     if (this.unit.unit === to.unit) return this
-    let asBaseUnit = this.value * this.unit.asBaseUnit //  the value in bit or byte * the value of his dataFormat in bit or byte
+    let inBaseUnit = this.value * this.unit.asBaseUnit //  the value in bit or byte * the value of his dataFormat in bit or byte
     if (this.unit.isInByte && !to.isInByte) {
-      asBaseUnit = asBaseUnit * 8 //  the value in byte * the value of his dataFormat in byte * 8 to make this value in bit as 1 byte = 8 bit
+      inBaseUnit = inBaseUnit * 8 //  the value in byte * the value of his dataFormat in byte * 8 to make this value in bit as 1 byte = 8 bit
     } else if (!this.unit.isInByte && to.isInByte) {
-      asBaseUnit = asBaseUnit / 8 //  the value in bit * the value of his dataFormat in bit / 8 to make this value in byte as 8 bit = 1 byte
+      inBaseUnit = inBaseUnit / 8 //  the value in bit * the value of his dataFormat in bit / 8 to make this value in byte as 8 bit = 1 byte
     }
-    return new UnitValue(asBaseUnit / to.asBaseUnit, to)
+    return new UnitValue(inBaseUnit / to.asBaseUnit, to)
   }
 
   compare (to: UnitValue, descendent?: boolean): -1 | 0 | 1 {
@@ -257,6 +267,38 @@ export class UnitValue {
       return scaleFormattedValue(this, filterDataformats(this, opt, false))
     }
     return this
+  }
+
+  plus (value: UnitValue, options?: Unit | Partial<IAutoScaleOptions>): UnitValue {
+    const curUnit = this.unit.isInBit ? 'b' : 'B'
+    return optionOperation(new UnitValue(
+      this.convert(curUnit).value + value.convert(curUnit).value,
+      curUnit
+    ), options || this.unit)
+  }
+
+  minus (value: UnitValue, options?: Unit | Partial<IAutoScaleOptions>): UnitValue {
+    const curUnit = this.unit.isInBit ? 'b' : 'B'
+    return optionOperation(new UnitValue(
+      this.convert(curUnit).value - value.convert(curUnit).value,
+      curUnit
+    ), options || this.unit)
+  }
+
+  multiply (value: UnitValue, options?: Unit | Partial<IAutoScaleOptions>): UnitValue {
+    const curUnit = this.unit.isInBit ? 'b' : 'B'
+    return optionOperation(new UnitValue(
+      this.convert(curUnit).value * value.convert(curUnit).value,
+      curUnit
+    ), options || this.unit)
+  }
+
+  divide (value: UnitValue, options?: Unit | Partial<IAutoScaleOptions>): UnitValue {
+    const curUnit = this.unit.isInBit ? 'b' : 'B'
+    return optionOperation(new UnitValue(
+      this.convert(curUnit).value / value.convert(curUnit).value,
+      curUnit
+    ), options || this.unit)
   }
 }
 

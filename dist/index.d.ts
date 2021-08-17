@@ -13,6 +13,10 @@ export declare class ByteConverter {
     static compareFormat(from: Unit | UnitNames, to: Unit | UnitNames, descendent?: boolean): -1 | 0 | 1;
     static compareValue(from: UnitValue, to: UnitValue, descendent?: boolean): -1 | 0 | 1;
     static autoScale(from: UnitValue, options?: Partial<IAutoScaleOptions>): UnitValue;
+    static plus(a: UnitValue, b: UnitValue, options?: Unit | Partial<IAutoScaleOptions>): UnitValue;
+    static minus(a: UnitValue, b: UnitValue, options?: Unit | Partial<IAutoScaleOptions>): UnitValue;
+    static multiply(a: UnitValue, b: UnitValue, options?: Unit | Partial<IAutoScaleOptions>): UnitValue;
+    static divide(a: UnitValue, b: UnitValue, options?: Unit | Partial<IAutoScaleOptions>): UnitValue;
 }
 export default ByteConverter;
 export { Unit, UnitValue } from './unit';

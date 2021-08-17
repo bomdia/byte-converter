@@ -53,6 +53,22 @@ export class ByteConverter {
   static autoScale (from: UnitValue, options?: Partial<IAutoScaleOptions>): UnitValue {
     return from.autoScale(options)
   }
+
+  static plus (a: UnitValue, b: UnitValue, options?: Unit | Partial<IAutoScaleOptions>): UnitValue {
+    return a.plus(b, options)
+  }
+
+  static minus (a: UnitValue, b: UnitValue, options?: Unit | Partial<IAutoScaleOptions>): UnitValue {
+    return a.minus(b, options)
+  }
+
+  static multiply (a: UnitValue, b: UnitValue, options?: Unit | Partial<IAutoScaleOptions>): UnitValue {
+    return a.multiply(b, options)
+  }
+
+  static divide (a: UnitValue, b: UnitValue, options?: Unit | Partial<IAutoScaleOptions>): UnitValue {
+    return a.divide(b, options)
+  }
 }
 
 export default ByteConverter
