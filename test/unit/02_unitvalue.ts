@@ -3,7 +3,7 @@ import * as mocha from 'mocha'
 import * as chai from 'chai'
 import { UnitValue } from '../../src/unit'
 import { GroupedIT, ITElement, MultiGroup, SingleGroup } from '../helper'
-import { AutoScalePreferType, AutoScalePreferUnit, IAutoScaleOptions, AutoScaleDefaults } from '../../src/types'
+import { IAutoScaleOptions, AutoScaleDefaults } from '../../src/types'
 
 const expect = chai.expect
 
@@ -64,148 +64,64 @@ GroupedIT.multi(
       )),
       new SingleGroup('Prefer SAME UNIT and prefer OPPOSITE TYPE', ...expectAutoScales(AutoScaleDefaults.SameOpposite,
         [new UnitValue(1024, 'b'), new UnitValue(1.024, 'kb')],
+        [new UnitValue(0.128, 'kB'), new UnitValue(128, 'B')]
+      )),
+      new SingleGroup('prefer SAME UNIT and prefer DECIMAL TYPE', ...expectAutoScales(AutoScaleDefaults.SameDecimal,
+        [new UnitValue(1024, 'b'), new UnitValue(1.024, 'kb')],
         [new UnitValue(0.128, 'kB'), new UnitValue(0.128, 'kB')]
       )),
-      new SingleGroup('prefer SAME UNIT and prefer DECIMAL TYPE',
-        new ITElement('1024 b = 1.024 kb', () => {
-          expect(new UnitValue(1024, 'b').autoScale({ unit: AutoScalePreferUnit.SAME, type: AutoScalePreferType.DECIMAL }))
-            .to.deep.equal(new UnitValue(1.024, 'kb'))
-        }),
-        new ITElement('1024 b = 1 Kib', () => {
-          expect(new UnitValue(1024, 'b').autoScale({ unit: AutoScalePreferUnit.SAME, type: AutoScalePreferType.DECIMAL }))
-            .to.deep.equal(new UnitValue(1, 'Kib'))
-        })
-      ),
-      new SingleGroup('prefer SAME UNIT and prefer BINARY TYPE',
-        new ITElement('1024 b = 1 Kib', () => {
-          expect(new UnitValue(1024, 'b').autoScale({ unit: AutoScalePreferUnit.SAME, type: AutoScalePreferType.BINARY }))
-            .to.deep.equal(new UnitValue(1, 'Kib'))
-        }),
-        new ITElement('1024 b = 1 Kib', () => {
-          expect(new UnitValue(1024, 'b').autoScale({ unit: AutoScalePreferUnit.SAME, type: AutoScalePreferType.BINARY }))
-            .to.deep.equal(new UnitValue(1, 'Kib'))
-        })
-      ),
-      new SingleGroup('prefer OPPOSITE UNIT and prefer SAME TYPE',
-        new ITElement('1024 b = 128 B', () => {
-          expect(new UnitValue(1024, 'b').autoScale({ unit: AutoScalePreferUnit.OPPOSITE, type: AutoScalePreferType.SAME }))
-            .to.deep.equal(new UnitValue(128, 'B'))
-        }),
-        new ITElement('1024 b = 1 Kib', () => {
-          expect(new UnitValue(1024, 'b').autoScale({ unit: AutoScalePreferUnit.OPPOSITE, type: AutoScalePreferType.SAME }))
-            .to.deep.equal(new UnitValue(1, 'Kib'))
-        })
-      ),
-      new SingleGroup('Prefer OPPOSITE UNIT and prefer OPPOSITE TYPE',
-        new ITElement('1024 b = 1024 b', () => {
-          expect(new UnitValue(1024, 'b').autoScale({ unit: AutoScalePreferUnit.OPPOSITE, type: AutoScalePreferType.OPPOSITE }))
-            .to.deep.equal(new UnitValue(1024, 'b'))
-        }),
-        new ITElement('1024 b = 1 Kib', () => {
-          expect(new UnitValue(1024, 'b').autoScale({ unit: AutoScalePreferUnit.OPPOSITE, type: AutoScalePreferType.OPPOSITE }))
-            .to.deep.equal(new UnitValue(1, 'Kib'))
-        })
-      ),
-      new SingleGroup('prefer OPPOSITE UNIT and prefer DECIMAL TYPE',
-        new ITElement('1024 b = 1024 b', () => {
-          expect(new UnitValue(1024, 'b').autoScale({ unit: AutoScalePreferUnit.OPPOSITE, type: AutoScalePreferType.DECIMAL }))
-            .to.deep.equal(new UnitValue(1024, 'b'))
-        }),
-        new ITElement('1024 b = 1 Kib', () => {
-          expect(new UnitValue(1024, 'b').autoScale({ unit: AutoScalePreferUnit.OPPOSITE, type: AutoScalePreferType.DECIMAL }))
-            .to.deep.equal(new UnitValue(1, 'Kib'))
-        })
-      ),
-      new SingleGroup('prefer OPPOSITE UNIT and prefer BINARY TYPE',
-        new ITElement('1024 b = 128 B', () => {
-          expect(new UnitValue(1024, 'b').autoScale({ unit: AutoScalePreferUnit.OPPOSITE, type: AutoScalePreferType.BINARY }))
-            .to.deep.equal(new UnitValue(128, 'B'))
-        }),
-        new ITElement('1024 b = 1 Kib', () => {
-          expect(new UnitValue(1024, 'b').autoScale({ unit: AutoScalePreferUnit.OPPOSITE, type: AutoScalePreferType.BINARY }))
-            .to.deep.equal(new UnitValue(1, 'Kib'))
-        })
-      ),
-      new SingleGroup('prefer BIT UNIT and prefer SAME TYPE',
-        new ITElement('1024 b = 1 Kib', () => {
-          expect(new UnitValue(1024, 'b').autoScale({ unit: AutoScalePreferUnit.BIT, type: AutoScalePreferType.SAME }))
-            .to.deep.equal(new UnitValue(1, 'Kib'))
-        }),
-        new ITElement('1024 b = 1 Kib', () => {
-          expect(new UnitValue(1024, 'b').autoScale({ unit: AutoScalePreferUnit.BIT, type: AutoScalePreferType.SAME }))
-            .to.deep.equal(new UnitValue(1, 'Kib'))
-        })
-      ),
-      new SingleGroup('Prefer BIT UNIT and prefer OPPOSITE TYPE',
-        new ITElement('1024 b = 1.024 kb', () => {
-          expect(new UnitValue(1024, 'b').autoScale({ unit: AutoScalePreferUnit.BIT, type: AutoScalePreferType.OPPOSITE }))
-            .to.deep.equal(new UnitValue(1.024, 'kb'))
-        }),
-        new ITElement('1024 b = 1 Kib', () => {
-          expect(new UnitValue(1024, 'b').autoScale({ unit: AutoScalePreferUnit.BIT, type: AutoScalePreferType.SAME }))
-            .to.deep.equal(new UnitValue(1, 'Kib'))
-        })
-      ),
-      new SingleGroup('prefer BIT UNIT and prefer DECIMAL TYPE',
-        new ITElement('1024 b = 1.024 kb', () => {
-          expect(new UnitValue(1024, 'b').autoScale({ unit: AutoScalePreferUnit.BIT, type: AutoScalePreferType.DECIMAL }))
-            .to.deep.equal(new UnitValue(1.024, 'kb'))
-        }),
-        new ITElement('1024 b = 1 Kib', () => {
-          expect(new UnitValue(1024, 'b').autoScale({ unit: AutoScalePreferUnit.BIT, type: AutoScalePreferType.SAME }))
-            .to.deep.equal(new UnitValue(1, 'Kib'))
-        })
-      ),
-      new SingleGroup('prefer BIT UNIT and prefer BINARY TYPE',
-        new ITElement('1024 b = 1 Kib', () => {
-          expect(new UnitValue(1024, 'b').autoScale({ unit: AutoScalePreferUnit.BIT, type: AutoScalePreferType.BINARY }))
-            .to.deep.equal(new UnitValue(1, 'Kib'))
-        }),
-        new ITElement('1024 b = 1 Kib', () => {
-          expect(new UnitValue(1024, 'b').autoScale({ unit: AutoScalePreferUnit.BIT, type: AutoScalePreferType.SAME }))
-            .to.deep.equal(new UnitValue(1, 'Kib'))
-        })
-      ),
-      new SingleGroup('prefer BYTE UNIT and prefer SAME TYPE',
-        new ITElement('1024 b = 128 B', () => {
-          expect(new UnitValue(1024, 'b').autoScale({ unit: AutoScalePreferUnit.BYTE, type: AutoScalePreferType.SAME }))
-            .to.deep.equal(new UnitValue(128, 'B'))
-        }),
-        new ITElement('1024 b = 1 Kib', () => {
-          expect(new UnitValue(1024, 'b').autoScale({ unit: AutoScalePreferUnit.BYTE, type: AutoScalePreferType.SAME }))
-            .to.deep.equal(new UnitValue(1, 'Kib'))
-        })
-      ),
-      new SingleGroup('Prefer BYTE UNIT and prefer OPPOSITE TYPE',
-        new ITElement('1024 b = 1024 b', () => {
-          expect(new UnitValue(1024, 'b').autoScale({ unit: AutoScalePreferUnit.BYTE, type: AutoScalePreferType.OPPOSITE }))
-            .to.deep.equal(new UnitValue(1024, 'b'))
-        }),
-        new ITElement('1024 b = 1 Kib', () => {
-          expect(new UnitValue(1024, 'b').autoScale({ unit: AutoScalePreferUnit.BYTE, type: AutoScalePreferType.SAME }))
-            .to.deep.equal(new UnitValue(1, 'Kib'))
-        })
-      ),
-      new SingleGroup('prefer BYTE UNIT and prefer DECIMAL TYPE',
-        new ITElement('1024 b = 1024 b', () => {
-          expect(new UnitValue(1024, 'b').autoScale({ unit: AutoScalePreferUnit.BYTE, type: AutoScalePreferType.DECIMAL }))
-            .to.deep.equal(new UnitValue(1024, 'b'))
-        }),
-        new ITElement('1024 b = 1 Kib', () => {
-          expect(new UnitValue(1024, 'b').autoScale({ unit: AutoScalePreferUnit.BYTE, type: AutoScalePreferType.SAME }))
-            .to.deep.equal(new UnitValue(1, 'Kib'))
-        })
-      ),
-      new SingleGroup('prefer BYTE UNIT and prefer BINARY TYPE',
-        new ITElement('1024 b = 128 B', () => {
-          expect(new UnitValue(1024, 'b').autoScale({ unit: AutoScalePreferUnit.BYTE, type: AutoScalePreferType.BINARY }))
-            .to.deep.equal(new UnitValue(128, 'B'))
-        }),
-        new ITElement('1024 b = 1 Kib', () => {
-          expect(new UnitValue(1024, 'b').autoScale({ unit: AutoScalePreferUnit.BYTE, type: AutoScalePreferType.BINARY }))
-            .to.deep.equal(new UnitValue(1, 'Kib'))
-        })
-      )
+      new SingleGroup('prefer SAME UNIT and prefer BINARY TYPE', ...expectAutoScales(AutoScaleDefaults.SameBinary,
+        [new UnitValue(1024, 'b'), new UnitValue(1, 'Kib')],
+        [new UnitValue(0.128, 'kB'), new UnitValue(128, 'B')]
+      )),
+      new SingleGroup('prefer OPPOSITE UNIT and prefer SAME TYPE', ...expectAutoScales(AutoScaleDefaults.OppositeSame,
+        [new UnitValue(1024, 'b'), new UnitValue(128, 'B')],
+        [new UnitValue(0.128, 'kB'), new UnitValue(1.024, 'kb')]
+      )),
+      new SingleGroup('Prefer OPPOSITE UNIT and prefer OPPOSITE TYPE', ...expectAutoScales(AutoScaleDefaults.OppositeOpposite,
+        [new UnitValue(1024, 'b'), new UnitValue(1024, 'b')],
+        [new UnitValue(0.128, 'kB'), new UnitValue(1, 'Kib')]
+      )),
+      new SingleGroup('prefer OPPOSITE UNIT and prefer DECIMAL TYPE', ...expectAutoScales(AutoScaleDefaults.OppositeDecimal,
+        [new UnitValue(1024, 'b'), new UnitValue(1024, 'b')],
+        [new UnitValue(0.128, 'kB'), new UnitValue(1.024, 'kb')]
+      )),
+      new SingleGroup('prefer OPPOSITE UNIT and prefer BINARY TYPE', ...expectAutoScales(AutoScaleDefaults.OppositeBinary,
+        [new UnitValue(1024, 'b'), new UnitValue(128, 'B')],
+        [new UnitValue(0.128, 'kB'), new UnitValue(1, 'Kib')]
+      )),
+      new SingleGroup('prefer BIT UNIT and prefer SAME TYPE', ...expectAutoScales(AutoScaleDefaults.BitSame,
+        [new UnitValue(1024, 'b'), new UnitValue(1, 'Kib')],
+        [new UnitValue(0.128, 'kB'), new UnitValue(1.024, 'kb')]
+      )),
+      new SingleGroup('Prefer BIT UNIT and prefer OPPOSITE TYPE', ...expectAutoScales(AutoScaleDefaults.BitOpposite,
+        [new UnitValue(1024, 'b'), new UnitValue(1.024, 'kb')],
+        [new UnitValue(0.128, 'kB'), new UnitValue(1, 'Kib')]
+      )),
+      new SingleGroup('prefer BIT UNIT and prefer DECIMAL TYPE', ...expectAutoScales(AutoScaleDefaults.BitDecimal,
+        [new UnitValue(1024, 'b'), new UnitValue(1.024, 'kb')],
+        [new UnitValue(0.128, 'kB'), new UnitValue(1.024, 'kb')]
+      )),
+      new SingleGroup('prefer BIT UNIT and prefer BINARY TYPE', ...expectAutoScales(AutoScaleDefaults.BitBinary,
+        [new UnitValue(1024, 'b'), new UnitValue(1, 'Kib')],
+        [new UnitValue(0.128, 'kB'), new UnitValue(1, 'Kib')]
+      )),
+      new SingleGroup('prefer BYTE UNIT and prefer SAME TYPE', ...expectAutoScales(AutoScaleDefaults.ByteSame,
+        [new UnitValue(1024, 'b'), new UnitValue(128, 'B')],
+        [new UnitValue(0.128, 'kB'), new UnitValue(0.128, 'kB')]
+      )),
+      new SingleGroup('Prefer BYTE UNIT and prefer OPPOSITE TYPE', ...expectAutoScales(AutoScaleDefaults.ByteOpposite,
+        [new UnitValue(1024, 'b'), new UnitValue(1024, 'b')],
+        [new UnitValue(0.128, 'kB'), new UnitValue(128, 'B')]
+      )),
+      new SingleGroup('prefer BYTE UNIT and prefer DECIMAL TYPE', ...expectAutoScales(AutoScaleDefaults.ByteDecimal,
+        [new UnitValue(1024, 'b'), new UnitValue(1024, 'b')],
+        [new UnitValue(0.128, 'kB'), new UnitValue(0.128, 'kB')]
+      )),
+      new SingleGroup('prefer BYTE UNIT and prefer BINARY TYPE', ...expectAutoScales(AutoScaleDefaults.ByteBinary,
+        [new UnitValue(1024, 'b'), new UnitValue(128, 'B')],
+        [new UnitValue(0.128, 'kB'), new UnitValue(128, 'B')]
+      ))
     )
   )
 )

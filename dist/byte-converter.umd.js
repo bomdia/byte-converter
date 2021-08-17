@@ -319,6 +319,8 @@
     }
 
     exports.ByteConverter = ByteConverter;
+    exports.Unit = Unit;
+    exports.UnitValue = UnitValue;
     exports['default'] = ByteConverter;
 
     Object.defineProperty(exports, '__esModule', { value: true });

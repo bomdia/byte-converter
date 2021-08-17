@@ -312,4 +312,4 @@ class ByteConverter {
     }
 }
 
-export { ByteConverter, ByteConverter as default };
+export { ByteConverter, Unit, UnitValue, ByteConverter as default };

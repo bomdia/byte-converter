@@ -50,9 +50,10 @@ export class ByteConverter {
     return from.compare(to, descendent)
   }
 
-  static autoScale (from: UnitValue, options?: IAutoScaleOptions): UnitValue {
+  static autoScale (from: UnitValue, options?: Partial<IAutoScaleOptions>): UnitValue {
     return from.autoScale(options)
   }
 }
 
 export default ByteConverter
+export { Unit, UnitValue } from './unit'

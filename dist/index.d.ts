@@ -12,6 +12,7 @@ export declare class ByteConverter {
     static convert(from: UnitValue, to: Unit | UnitNames): UnitValue;
     static compareFormat(from: Unit | UnitNames, to: Unit | UnitNames, descendent?: boolean): -1 | 0 | 1;
     static compareValue(from: UnitValue, to: UnitValue, descendent?: boolean): -1 | 0 | 1;
-    static autoScale(from: UnitValue, options?: IAutoScaleOptions): UnitValue;
+    static autoScale(from: UnitValue, options?: Partial<IAutoScaleOptions>): UnitValue;
 }
 export default ByteConverter;
+export { Unit, UnitValue } from './unit';

@@ -11,14 +11,14 @@
 		<script>
       function calc (val) {
         const value = val || window.val.value
-        const from = window.converter.dataFormats[window.selFrom.value].value(value)
+        const from = window.converter.value(value, window.selFrom.value)
 
         if (window.selTo.value !== 'auto') {
           window.result.value = window.converter.convert(from, window.converter.dataFormats[window.selTo.value]).formatted
         } else {
           const opt = { type: window.autoBase(), unit: window.autoUnit() }
           const val = window.converter.autoScale(from, opt)
-          window.result.value = val.formatted
+          window.result.value = val.formatted()
         }
       }
       function change () {
@@ -34,7 +34,7 @@
         console.log('ready called')
         /* global ByteConverter */
         /* eslint new-cap: ["error", { "newIsCap": false }] */
-        window.converter = new ByteConverter.default()
+        window.converter = ByteConverter.default
         window.result = document.getElementById('result')
         window.selFrom = document.getElementById('selectFrom')
         window.selTo = document.getElementById('selectTo')
@@ -44,7 +44,7 @@
         window.autoUnit = () => document.querySelector('input[name=autounit]:checked').value
 
         function recurseListAndCreateElement (destination, isDescendent, prependAuto) {
-          const sorted = window.converter.dataFormatsList.sort(function (a, b) { return window.converter.compareFormat(a, b, isDescendent) })
+          const sorted = window.converter.unitsList.sort(function (a, b) { return window.converter.compareFormat(a, b, isDescendent) })
           if (prependAuto) {
             const opt = document.createElement('option')
             opt.value = 'auto'
@@ -111,32 +111,32 @@
 				<td colspan="4">Option for autoScale:</td>
 			</tr>
       <tr>
-				<td colspan="2">Base:</td>
-				<td colspan="2">Unit:</td>
+        <td colspan="2">Unit:</td>
+				<td colspan="2">Type:</td>
 			</tr>
       <tr>
-        <td>preferSameBase</td>
-        <td><input type="radio" name="autobase" value ="same" checked /></td>
         <td>preferSameUnit</td>
         <td><input type="radio" name="autounit" value ="same" checked /></td>
+        <td>preferSameType</td>
+        <td><input type="radio" name="autobase" value ="same" checked /></td>
       </tr>
       <tr>
-        <td>preferOppositeBase</td>
-        <td><input type="radio" name="autobase" value="opposite"/></td>
         <td>preferOppositeUnit</td>
         <td><input type="radio" name="autounit" value="opposite"/></td>
+        <td>preferOppositeType</td>
+        <td><input type="radio" name="autobase" value="opposite"/></td>
       </tr>
       <tr>
-        <td>preferDecimal</td>
-        <td><input type="radio" name="autobase" value="decimal"/></td>
         <td>preferBit</td>
         <td><input type="radio" name="autounit" value="bit"/></td>
+        <td>preferDecimal</td>
+        <td><input type="radio" name="autobase" value="decimal"/></td>
       </tr>
       <tr>
-        <td>preferBinary</td>
-        <td><input type="radio" name="autobase" value="binary"/></td>
         <td>preferByte</td>
         <td><input type="radio" name="autounit" value="byte"/></td>
+        <td>preferBinary</td>
+        <td><input type="radio" name="autobase" value="binary"/></td>
       </tr>
 		</table>
 	</body>
