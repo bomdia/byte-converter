@@ -6,6 +6,7 @@
   - [Units Table](/#units-table "@wtfcode/byte-converter - Units Table")
 - [More Examples](examples#more-examples "@wtfcode/byte-converter - Examples")
   - [AutoScale of a file](examples#autoscale-of-a-file "@wtfcode/byte-converter - Examples: AutoScale of a file")
+  - [Measure Dir Size](examples#measure-dir-size "@wtfcode/byte-converter - Examples: Measure Dir Size")
 - [API](api#api "@wtfcode/byte-converter - API")
   - [AutoScale Option](api#autoscale-option "@wtfcode/byte-converter - API: AutoScale Option")
   - [Unit](api#unit "@wtfcode/byte-converter - API: Unit")
