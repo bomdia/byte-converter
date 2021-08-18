@@ -380,10 +380,14 @@
             return a.divide(b, options);
         }
     }
+    const b = Unit.unit('b');
+    const B = Unit.unit('B');
 
+    exports.B = B;
     exports.ByteConverter = ByteConverter;
     exports.Unit = Unit;
     exports.UnitValue = UnitValue;
+    exports.b = b;
     exports['default'] = ByteConverter;
 
     Object.defineProperty(exports, '__esModule', { value: true });

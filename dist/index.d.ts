@@ -21,3 +21,5 @@ export declare class ByteConverter {
 }
 export default ByteConverter;
 export { Unit, UnitValue } from './unit';
+export declare const b: Unit;
+export declare const B: Unit;

@@ -374,5 +374,7 @@ class ByteConverter {
         return a.divide(b, options);
     }
 }
+const b = Unit.unit('b');
+const B = Unit.unit('B');
 
-export { ByteConverter, Unit, UnitValue, ByteConverter as default };
+export { B, ByteConverter, Unit, UnitValue, b, ByteConverter as default };
