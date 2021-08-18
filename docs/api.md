@@ -9,10 +9,10 @@ All property of the object can be omitted and the default will be loaded instead
     - choose the preferred type for autoScale
   - **unit**: AutoScalePreferUnit
     - choose the preferred unit for autoScale
-  - **filter**(dataFormat: Unit, isScalingUp: boolean): boolean
+  - **filter**(unit: Unit, isScalingUp: boolean): boolean
     - callback invoked for additionally filtering the available units
     - invoked with the UnitValue as **this**
-    - returns false for keeping and true for filtering out the dataFormat
+    - returns false for keeping and true for filtering out the unit
 
 ##### Enums
 
