@@ -32,12 +32,12 @@ export interface IAutoScaleOptions {
     unit: AutoScalePreferUnit;
     /**
      *
-     * @param dataFormat
+     * @param unit
      * @param isScalingUp
      *
-     * @returns false for keeping and true for filtering out the dataFormat
+     * @returns false for keeping and true for filtering out the unit
      */
-    filter(dataFormat: Unit, isScalingUp: boolean): boolean;
+    filter(unit: Unit, isScalingUp: boolean): boolean;
 }
 export declare type AutoScaleOptionDefaults = {
     [key in AutoScaleDefaultNames]: IAutoScaleOptions;

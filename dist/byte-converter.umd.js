@@ -80,24 +80,45 @@
         Yib: { type: 'binary', unitOrder: 8, name: 'yobibit' },
         YiB: { type: 'binary', unitOrder: 8, name: 'yobibyte' }
     };
+    let unitMap;
     class Unit {
-        constructor(dataFormat, format) {
-            this.unit = dataFormat;
+        constructor(unit, format) {
+            if (typeof unitMap !== 'undefined')
+                throw new RangeError('Don\'t create new unit: use Unit.unit(unit: UnitNames)');
+            this.unit = unit;
             this.type = format.type;
             this.name = format.name;
             this.unitOrder = format.unitOrder;
         }
         static get map() {
-            return Object.freeze(Object.keys(map).reduce((accumulator, target) => {
-                accumulator[target] = new Unit(target, map[target]);
-                return accumulator;
-            }, {}));
+            if (typeof unitMap === 'undefined') {
+                unitMap = Object.freeze(Object.keys(map).reduce((accumulator, target) => {
+                    accumulator[target] = new Unit(target, map[target]);
+                    return accumulator;
+                }, {}));
+            }
+            return unitMap;
         }
         static get AutoScaleDefaults() {
             return AutoScaleDefaults;
         }
         static get AutoScaleDefault() {
             return AutoScaleDefault;
+        }
+        static [Symbol.iterator]() {
+            const iterator = Object.keys(this.map)[Symbol.iterator]();
+            return {
+                next() {
+                    const cur = iterator.next();
+                    return {
+                        done: cur.done,
+                        value: Unit.unit(cur.value)
+                    };
+                }
+            };
+        }
+        toString() {
+            return this.unit;
         }
         get asBaseUnit() {
             return Math.pow(UnitTypeValue[this.type], this.unitOrder);
@@ -144,7 +165,7 @@
             return this.value(1).compare(Unit.unit(to).value(1), descendent);
         }
     }
-    function filterDataformats(value, options, isScalingUp = false) {
+    function filterUnits(value, options, isScalingUp = false) {
         const formats = [];
         for (const formatKey of Object.keys(Unit.map)) {
             const format = Unit.map[formatKey];
@@ -202,8 +223,8 @@
         }
         return false;
     }
-    function scaleFormattedValue(value, dataFormats) {
-        for (const format of dataFormats) {
+    function scaleUnitValue(value, units) {
+        for (const format of units) {
             const val = value.convert(format);
             if (val.value < UnitTypeValue[val.unit.type] && val.value >= 1) {
                 return val;
@@ -215,10 +236,7 @@
         if (options instanceof Unit) {
             return ret.convert(options);
         }
-        else if (options) {
-            return ret.autoScale(options);
-        }
-        return ret;
+        return ret.autoScale(options);
     }
     class UnitValue {
         constructor(value, unit) {
@@ -234,17 +252,20 @@
         formatted() {
             return this.value.toLocaleString() + ' ' + this.unit.unit;
         }
+        toString() {
+            return this.value + ' ' + this.unit;
+        }
         convert(to) {
             if (!(to instanceof Unit))
                 to = Unit.unit(to);
             if (this.unit.unit === to.unit)
                 return this;
-            let inBaseUnit = this.value * this.unit.asBaseUnit; //  the value in bit or byte * the value of his dataFormat in bit or byte
+            let inBaseUnit = this.value * this.unit.asBaseUnit; //  the value in bit or byte * the value of his unit in bit or byte
             if (this.unit.isInByte && !to.isInByte) {
-                inBaseUnit = inBaseUnit * 8; //  the value in byte * the value of his dataFormat in byte * 8 to make this value in bit as 1 byte = 8 bit
+                inBaseUnit = inBaseUnit * 8; //  the value in byte * the value of his unit in byte * 8 to make this value in bit as 1 byte = 8 bit
             }
             else if (!this.unit.isInByte && to.isInByte) {
-                inBaseUnit = inBaseUnit / 8; //  the value in bit * the value of his dataFormat in bit / 8 to make this value in byte as 8 bit = 1 byte
+                inBaseUnit = inBaseUnit / 8; //  the value in bit * the value of his unit in bit / 8 to make this value in byte as 8 bit = 1 byte
             }
             return new UnitValue(inBaseUnit / to.asBaseUnit, to);
         }
@@ -272,10 +293,10 @@
                 filter: options.filter || UnitValue.AutoScaleDefault.filter
             };
             if (this.value >= UnitTypeValue[this.unit.type]) { // upping
-                return scaleFormattedValue(this, filterDataformats(this, opt, true));
+                return scaleUnitValue(this, filterUnits(this, opt, true));
             }
             else if (this.value < 1) { // downing
-                return scaleFormattedValue(this, filterDataformats(this, opt, false));
+                return scaleUnitValue(this, filterUnits(this, opt, false));
             }
             return this;
         }
@@ -316,6 +337,9 @@
         }
         static get autoScaleDefaultsList() {
             return this.autoScaleDefaultNames.map((value) => this.autoScaleDefaults[value]);
+        }
+        static [Symbol.iterator]() {
+            return Unit[Symbol.iterator]();
         }
         static unit(unit) {
             return this.units[unit];

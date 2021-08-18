@@ -41,14 +41,19 @@ const map: BaseUnitMap = {
   YiB: { type: 'binary', unitOrder: 8, name: 'yobibyte' }
 }
 
+let unitMap: UnitMap | undefined
+
 export class Unit implements IUnitEntry {
   static get map (): UnitMap {
-    return Object.freeze<UnitMap>(
-      Object.keys(map).reduce((accumulator, target) => {
-        accumulator[target] = new Unit(target as UnitNames, map[target as UnitNames])
-        return accumulator
-      }, {} as {[key:string]:Unit}) as unknown as UnitMap
-    )
+    if (typeof unitMap === 'undefined') {
+      unitMap = Object.freeze<UnitMap>(
+        Object.keys(map).reduce((accumulator, target) => {
+          accumulator[target] = new Unit(target as UnitNames, map[target as UnitNames])
+          return accumulator
+        }, {} as {[key:string]:Unit}) as unknown as UnitMap
+      )
+    }
+    return unitMap
   }
 
   static get AutoScaleDefaults (): AutoScaleOptionDefaults {
@@ -59,24 +64,42 @@ export class Unit implements IUnitEntry {
     return AutoScaleDefault
   }
 
+  static [Symbol.iterator] (): Iterator<Unit> {
+    const iterator = Object.keys(this.map)[Symbol.iterator]()
+    return {
+      next () {
+        const cur = iterator.next()
+        return {
+          done: cur.done,
+          value: Unit.unit(cur.value)
+        }
+      }
+    }
+  }
+
   readonly unit: UnitNames
   readonly type: UnitType
   readonly unitOrder: number
   readonly name: string
 
-  constructor (dataFormat: UnitNames, format: IBaseUnitEntry) {
-    this.unit = dataFormat
+  constructor (unit: UnitNames, format: IBaseUnitEntry) {
+    if (typeof unitMap !== 'undefined') throw new RangeError('Don\'t create new unit: use Unit.unit(unit: UnitNames)')
+    this.unit = unit
     this.type = format.type
     this.name = format.name
     this.unitOrder = format.unitOrder
+  }
+
+  toString (): string {
+    return this.unit
   }
 
   get asBaseUnit (): number {
     return Math.pow(UnitTypeValue[this.type], this.unitOrder)
   }
 
-  get baseUnit (): string {
-    return this.unit[this.unit.length - 1]
+  get baseUnit (): UnitNames {
+    return this.unit[this.unit.length - 1] as UnitNames
   }
 
   get isInByte (): boolean {
@@ -129,7 +152,7 @@ export class Unit implements IUnitEntry {
   }
 }
 
-function filterDataformats (value: UnitValue, options: IAutoScaleOptions, isScalingUp = false): Unit[] {
+function filterUnits (value: UnitValue, options: IAutoScaleOptions, isScalingUp = false): Unit[] {
   const formats:Unit[] = []
   for (const formatKey of Object.keys(Unit.map) as unknown as UnitNames[]) {
     const format = Unit.map[formatKey]
@@ -186,8 +209,8 @@ function filterOnType (type: AutoScalePreferType, value: UnitValue, format: Unit
   return false
 }
 
-function scaleFormattedValue (value: UnitValue, dataFormats: Unit[]): UnitValue {
-  for (const format of dataFormats) {
+function scaleUnitValue (value: UnitValue, units: Unit[]): UnitValue {
+  for (const format of units) {
     const val = value.convert(format)
     if (val.value < UnitTypeValue[val.unit.type] && val.value >= 1) {
       return val
@@ -196,13 +219,11 @@ function scaleFormattedValue (value: UnitValue, dataFormats: Unit[]): UnitValue 
   return value
 }
 
-function optionOperation (ret: UnitValue, options?: Unit | Partial<IAutoScaleOptions>): UnitValue {
+function optionOperation (ret: UnitValue, options: Unit | Partial<IAutoScaleOptions>): UnitValue {
   if (options instanceof Unit) {
     return ret.convert(options)
-  } else if (options) {
-    return ret.autoScale(options)
   }
-  return ret
+  return ret.autoScale(options)
 }
 
 export class UnitValue {
@@ -226,14 +247,18 @@ export class UnitValue {
     return this.value.toLocaleString() + ' ' + this.unit.unit
   }
 
+  toString (): string {
+    return this.value + ' ' + this.unit
+  }
+
   convert (to: Unit | UnitNames): UnitValue {
     if (!(to instanceof Unit)) to = Unit.unit(to)
     if (this.unit.unit === to.unit) return this
-    let inBaseUnit = this.value * this.unit.asBaseUnit //  the value in bit or byte * the value of his dataFormat in bit or byte
+    let inBaseUnit = this.value * this.unit.asBaseUnit //  the value in bit or byte * the value of his unit in bit or byte
     if (this.unit.isInByte && !to.isInByte) {
-      inBaseUnit = inBaseUnit * 8 //  the value in byte * the value of his dataFormat in byte * 8 to make this value in bit as 1 byte = 8 bit
+      inBaseUnit = inBaseUnit * 8 //  the value in byte * the value of his unit in byte * 8 to make this value in bit as 1 byte = 8 bit
     } else if (!this.unit.isInByte && to.isInByte) {
-      inBaseUnit = inBaseUnit / 8 //  the value in bit * the value of his dataFormat in bit / 8 to make this value in byte as 8 bit = 1 byte
+      inBaseUnit = inBaseUnit / 8 //  the value in bit * the value of his unit in bit / 8 to make this value in byte as 8 bit = 1 byte
     }
     return new UnitValue(inBaseUnit / to.asBaseUnit, to)
   }
@@ -262,9 +287,9 @@ export class UnitValue {
     }
 
     if (this.value >= UnitTypeValue[this.unit.type]) { // upping
-      return scaleFormattedValue(this, filterDataformats(this, opt, true))
+      return scaleUnitValue(this, filterUnits(this, opt, true))
     } else if (this.value < 1) { // downing
-      return scaleFormattedValue(this, filterDataformats(this, opt, false))
+      return scaleUnitValue(this, filterUnits(this, opt, false))
     }
     return this
   }

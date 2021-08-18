@@ -7,6 +7,7 @@ export declare class ByteConverter {
     static get autoScaleDefaults(): AutoScaleOptionDefaults;
     static get autoScaleDefaultNames(): AutoScaleDefaultNames[];
     static get autoScaleDefaultsList(): IAutoScaleOptions[];
+    static [Symbol.iterator](): Iterator<Unit>;
     static unit(unit: UnitNames): Unit;
     static value(value: number, unit: Unit | UnitNames): UnitValue;
     static convert(from: UnitValue, to: Unit | UnitNames): UnitValue;

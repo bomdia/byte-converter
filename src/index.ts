@@ -26,6 +26,10 @@ export class ByteConverter {
     return this.autoScaleDefaultNames.map((value) => this.autoScaleDefaults[value])
   }
 
+  static [Symbol.iterator] (): Iterator<Unit> {
+    return Unit[Symbol.iterator]()
+  }
+
   static unit (unit: UnitNames): Unit {
     return this.units[unit]
   }
@@ -73,3 +77,5 @@ export class ByteConverter {
 
 export default ByteConverter
 export { Unit, UnitValue } from './unit'
+export const b = Unit.unit('b')
+export const B = Unit.unit('B')

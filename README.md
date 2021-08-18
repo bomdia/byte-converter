@@ -1,9 +1,12 @@
+# [Full Documentation](https://bomdia.github.io/byte-converter/#/)
+
 # Getting Started
 
 **This package is compliant to IEC standard units.** see [Units Table](#units-table) for supported units  
 Convert any value from a supported unit to an another supported unit.  
-Sum, Subtract, Multiply and Divide two value with any supported unit  
-Use the autoScale function for scale a given value and unit to te best unit for representing the value
+Compare any value or unit to another one.
+Sum, Subtract, Multiply and Divide two value with any supported unit.  
+Use the **autoScale** function for scale a given value and unit to te best unit for representing the value.
 
 ## Install
 
@@ -12,6 +15,20 @@ Use the autoScale function for scale a given value and unit to te best unit for 
 or
 
 - `npm i @wtfcode/byte-converter`
+
+## Exports
+
+#### Default
+
+- class **ByteConverter**
+
+#### Named
+
+- class **Unit**
+- class **UnitValue**
+- class **ByteConverter**
+- const **b**: Unit
+- const **B**: Unit
 
 ## Changelog
 
@@ -26,9 +43,16 @@ or
 ES6 syntax:
 
 ```js
-import { ByteConverter, Unit, UnitValue } from "@wtfcode/byte-converter";
+import {
+  ByteConverter,
+  Unit,
+  UnitValue,
+  B as Byte,
+} from "@wtfcode/byte-converter";
 
-console.log(ByteConverter.convert(ByteConverter.value(1, "B"), "b")); //will output 8
+console.log(ByteConverter.convert(Byte.value(1), "b")); //will output 8
+
+console.log(ByteConverter.convert(ByteConverter.value(1024, "MiB"), "GiB")); //will output 1
 
 console.log(new UnitValue(1024, "B").autoScale());
 

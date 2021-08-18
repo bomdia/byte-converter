@@ -3,13 +3,15 @@ export declare class Unit implements IUnitEntry {
     static get map(): UnitMap;
     static get AutoScaleDefaults(): AutoScaleOptionDefaults;
     static get AutoScaleDefault(): IAutoScaleOptions;
+    static [Symbol.iterator](): Iterator<Unit>;
     readonly unit: UnitNames;
     readonly type: UnitType;
     readonly unitOrder: number;
     readonly name: string;
-    constructor(dataFormat: UnitNames, format: IBaseUnitEntry);
+    constructor(unit: UnitNames, format: IBaseUnitEntry);
+    toString(): string;
     get asBaseUnit(): number;
-    get baseUnit(): string;
+    get baseUnit(): UnitNames;
     get isInByte(): boolean;
     get isInBit(): boolean;
     get isBinary(): boolean;
@@ -30,6 +32,7 @@ export declare class UnitValue {
     static get AutoScaleDefaults(): AutoScaleOptionDefaults;
     static get AutoScaleDefault(): IAutoScaleOptions;
     formatted(): string;
+    toString(): string;
     convert(to: Unit | UnitNames): UnitValue;
     compare(to: UnitValue, descendent?: boolean): -1 | 0 | 1;
     deepEquals(to: UnitValue): boolean;
