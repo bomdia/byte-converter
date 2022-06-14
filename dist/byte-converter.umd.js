@@ -2,7 +2,7 @@
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
     typeof define === 'function' && define.amd ? define(['exports'], factory) :
     (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.ByteConverter = {}));
-}(this, (function (exports) { 'use strict';
+})(this, (function (exports) { 'use strict';
 
     const UnitTypeValue = {
         decimal: 1000,
@@ -388,8 +388,8 @@
     exports.Unit = Unit;
     exports.UnitValue = UnitValue;
     exports.b = b;
-    exports['default'] = ByteConverter;
+    exports["default"] = ByteConverter;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 
-})));
+}));
