@@ -64,7 +64,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/bomdia/byte-converter.git"
+    "url": "git+https://github.com/bomdia/byte-converter.git"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "homepage": "https://bomdia.github.io/byte-converter/#/",
+  "directories": {
+    "doc": "docs",
+    "test": "test"
+  }
 }
