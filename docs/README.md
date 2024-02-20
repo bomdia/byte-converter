@@ -48,13 +48,15 @@ import {
   B as Byte,
 } from "@wtfcode/byte-converter";
 
-console.log(ByteConverter.convert(Byte.value(1), "b")); //will output 8
+console.log(ByteConverter.convert(Byte.value(1), "b"));
+// will output  UnitValue {value: 8, unit: Unit { unit: "b" ... } }
 
-console.log(ByteConverter.convert(ByteConverter.value(1024, "MiB"), "GiB")); //will output 1
+console.log(ByteConverter.convert(ByteConverter.value(1024, "MiB"), "GiB"));
+// will output  UnitValue {value: 1, unit: Unit { unit: "GiB" ... } }
 
 console.log(new UnitValue(1024, "B").autoScale());
-
-//will output: UnitValue {value: 1, unit: Unit { unit: "KiB", type: "binary", unitOrder: 1, name: "kibibyte" ... } } // the function return a UnitValue scaled
+// the function return a UnitValue scaled
+// will output: UnitValue {value: 1, unit: Unit { unit: "KiB", type: "binary", unitOrder: 1, name: "kibibyte" ... } }
 ```
 
 ES5 syntax:
@@ -62,11 +64,12 @@ ES5 syntax:
 ```js
 const ByteConverter = require("@wtfcode/byte-converter").default;
 
-console.log(ByteConverter.convert(ByteConverter.value(1024, "MiB"), "GiB")); //will output 1
+console.log(ByteConverter.convert(ByteConverter.value(1024, "MiB"), "GiB"));
+// will output  UnitValue {value: 1, unit: Unit { unit: "GiB" ... } }
 
-console.log(ByteConverter.autoScale(ByteConverter.value(0.7, "GB"))); //the function accept a third paramater: an option object
-
-//will output: UnitValue {value: 700, unit: Unit { unit: "MB", type: "decimal", unitOrder: 2, name: "megabyte" ... } }
+console.log(ByteConverter.autoScale(ByteConverter.value(0.7, "GB")));
+// the function accept a third paramater: an option object
+// will output: UnitValue {value: 700, unit: Unit { unit: "MB", type: "decimal", unitOrder: 2, name: "megabyte" ... } }
 ```
 
 ## Units Table
