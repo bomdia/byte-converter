@@ -6,7 +6,7 @@
 Convert any value from a supported unit to an another supported unit.  
 Compare any value or unit to another one.
 Sum, Subtract, Multiply and Divide two value with any supported unit.  
-Use the **autoScale** function for scale a given value and unit to te best unit for representing the value.
+Use the **autoScale** function for scale a given value and unit to the best unit for representing the value.
 
 ## Install
 
@@ -35,7 +35,7 @@ or
 | from   | to     | description                                                                                                 |
 | ------ | ------ | ----------------------------------------------------------------------------------------------------------- |
 | 2.0.1  | 2.0.5  | Added Arithmetic method to UnitValue                                                                        |
-|        | 2.0.1  | Rewrited the byteConverter implementation in typescript and heavily simplified the algorithm                |
+|        | 2.0.1  | Rewrote the byteConverter implementation in typescript and heavily simplified the algorithm                 |
 | 1.7.10 | 1.7.11 | autoScale now choose between 1000 and 1024 if is decimal type or binary type, the autoscaling is now better |
 
 ## Example
@@ -70,7 +70,7 @@ console.log(ByteConverter.convert(ByteConverter.value(1024, "MiB"), "GiB"));
 // will output  UnitValue {value: 1, unit: Unit { unit: "GiB" ... } }
 
 console.log(ByteConverter.autoScale(ByteConverter.value(0.7, "GB")));
-// the function accept a third paramater: an option object
+// the function accept a third parameter: an option object
 // will output: UnitValue {value: 700, unit: Unit { unit: "MB", type: "decimal", unitOrder: 2, name: "megabyte" ... } }
 ```
 
